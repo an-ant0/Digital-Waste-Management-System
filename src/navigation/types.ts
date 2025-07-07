@@ -1,0 +1,53 @@
+export type RootStackParamList = {
+  Splash: undefined;
+  LanguageSelection: undefined;
+  Login: undefined;
+  Signup1: undefined;
+  Signup2: {
+    firstName: string;
+    middleName: string;
+    lastName: string;
+    homeNumber: string;
+    wardNumber: string;
+    localityName: string;
+  };
+  Signup3: {
+    firstName: string;
+    middleName: string;
+    lastName: string;
+    homeNumber: string;
+    wardNumber: string;
+    localityName: string;
+    profilePic: string;
+    idType: string;
+    idNumber: string;
+    idPhoto: string;
+  };
+  Signup4: {
+    firstName: string;
+    middleName: string;
+    lastName: string;
+    homeNumber: string;
+    wardNumber: string;
+    localityName: string;
+    profilePic: string;
+    idType: string;
+    idNumber: string;
+    idPhoto: string;
+    phone: string;
+    email: string;
+    otp: string;
+    password: string;
+  };
+  Home: undefined;
+  Profile: undefined;
+  Feedback: undefined;
+  Rewards: undefined;
+  History: undefined;
+  Support: undefined;
+  RewardHistory: undefined;
+  ReportWaste: undefined;
+  CustomPickup: undefined;
+  Badges: undefined;
+  Leaderboard: undefined;
+};
