@@ -10,36 +10,32 @@ import {
 import CheckBox from '@react-native-community/checkbox';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../navigation/types';
+import { useTranslation } from 'react-i18next';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Signup4'>;
 
 const SignupScreen4: React.FC<Props> = ({ navigation, route }) => {
+  const { t } = useTranslation();
   const [agree, setAgree] = useState(false);
 
   const handleSignup = () => {
     if (!agree) {
-      Alert.alert('Please Accept Terms', 'You must accept the terms and conditions to continue.');
+      Alert.alert(t('acceptTermsTitle'), t('acceptTermsMessage'));
       return;
     }
 
-    // Here you'd typically send all the signup data to the server (route.params)
-
-    Alert.alert('Signup Successful', 'Account created successfully!');
-    navigation.navigate('Login'); // or your login/signup screen
+    // Simulate success
+    Alert.alert(t('signupSuccessTitle'), t('signupSuccessMessage'));
+    navigation.navigate('Login');
   };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.heading}>Terms and Conditions</Text>
+      <Text style={styles.heading}>{t('termsTitle')}</Text>
 
       <View style={styles.termsBox}>
-        <Text style={styles.termsText}>
-          By signing up to the DWMS app, you agree to the collection and use of your data in accordance
-          with our privacy policy. Your identity details will only be used for verification purposes.
-        </Text>
-        <Text style={styles.termsText}>
-          You also agree not to misuse the app and to report waste responsibly.
-        </Text>
+        <Text style={styles.termsText}>{t('termsLine1')}</Text>
+        <Text style={styles.termsText}>{t('termsLine2')}</Text>
       </View>
 
       <View style={styles.checkboxContainer}>
@@ -48,7 +44,7 @@ const SignupScreen4: React.FC<Props> = ({ navigation, route }) => {
           onValueChange={setAgree}
           tintColors={{ true: '#007BFF', false: '#aaa' }}
         />
-        <Text style={styles.checkboxLabel}>I agree to the terms and conditions</Text>
+        <Text style={styles.checkboxLabel}>{t('agreeTerms')}</Text>
       </View>
 
       <TouchableOpacity
@@ -56,7 +52,7 @@ const SignupScreen4: React.FC<Props> = ({ navigation, route }) => {
         disabled={!agree}
         onPress={handleSignup}
       >
-        <Text style={styles.signupButtonText}>Signup</Text>
+        <Text style={styles.signupButtonText}>{t('signup')}</Text>
       </TouchableOpacity>
     </ScrollView>
   );

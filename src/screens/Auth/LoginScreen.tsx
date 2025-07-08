@@ -9,37 +9,40 @@ import {
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../navigation/types';
+import { useTranslation } from 'react-i18next';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Login'>;
 
 const LoginScreen: React.FC<Props> = ({ navigation }) => {
+  const { t } = useTranslation();
+
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
 
   const handleLogin = () => {
     if (!phone || !password) {
-      Alert.alert('Error', 'Please enter both phone number and password.');
+      Alert.alert(t('error'), t('enterBothFields'));
       return;
     }
 
     if (phone === '1' && password === '1') {
-      Alert.alert('Success', 'Logged in successfully!');
+      Alert.alert(t('success'), t('loggedIn'));
       navigation.reset({
         index: 0,
         routes: [{ name: 'Home' }],
       });
     } else {
-      Alert.alert('Login Failed', 'Invalid credentials.');
+      Alert.alert(t('loginFailed'), t('invalidCredentials'));
     }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>Existing user?</Text>
+      <Text style={styles.heading}>{t('existingUser')}</Text>
 
       <TextInput
         style={styles.input}
-        placeholder="Phone Number"
+        placeholder={t('phoneNumber')}
         keyboardType="phone-pad"
         value={phone}
         onChangeText={setPhone}
@@ -47,19 +50,19 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
 
       <TextInput
         style={styles.input}
-        placeholder="Password"
+        placeholder={t('password')}
         secureTextEntry
         value={password}
         onChangeText={setPassword}
       />
 
       <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-        <Text style={styles.loginButtonText}>Login</Text>
+        <Text style={styles.loginButtonText}>{t('login')}</Text>
       </TouchableOpacity>
 
-      <Text style={styles.signupPrompt}>Not a user?</Text>
+      <Text style={styles.signupPrompt}>{t('notAUser')}</Text>
       <TouchableOpacity onPress={() => navigation.navigate('Signup1')}>
-        <Text style={styles.signupText}>Signup</Text>
+        <Text style={styles.signupText}>{t('signup')}</Text>
       </TouchableOpacity>
     </View>
   );

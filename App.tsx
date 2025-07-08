@@ -1,5 +1,8 @@
 import React from 'react';
 import 'react-native-reanimated';
+import { I18nextProvider } from 'react-i18next';
+import i18n from './src/i18n';
+import { useTranslation } from 'react-i18next';
 
 import 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
@@ -19,7 +22,7 @@ import HomeScreen from './src/screens/HomeScreen';
 import ReportWaste from './src/screens/ReportWasteScreen';
 import CustomPickupScreen from './src/screens/CustomPickupScreen';
 import RewardsScreen from './src/screens/RewardsScreen';
-import HistoryScreen from './src/screens/HistoryScreen';
+import HistoryScreen from './src/screens/ReportHistoryScreen';
 import SupportScreen from './src/screens/SupportScreen';
 import FeedbackScreen from './src/screens/FeedbackScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
@@ -31,37 +34,43 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 const Drawer = createDrawerNavigator();
 
 function DrawerRoutes() {
+  const { t } = useTranslation();
   return (
     <Drawer.Navigator initialRouteName="Home">
-      <Drawer.Screen name="Home" component={HomeScreen} />
-      <Drawer.Screen name="Report Waste" component={ReportWaste} />
-      <Drawer.Screen name="Custom Pickup" component={CustomPickupScreen} />
-      <Drawer.Screen name="Rewards" component={RewardsScreen} />
-      <Drawer.Screen name="Support" component={SupportScreen} />
+      <Drawer.Screen name="Home" component={HomeScreen} options={{ drawerLabel: t('home') }} />
+      <Drawer.Screen name="Report Waste" component={ReportWaste} options={{ drawerLabel: t('reportWaste') }} />
+      <Drawer.Screen name="Custom Pickup" component={CustomPickupScreen} options={{ drawerLabel: t('customPickup') }} />
+      <Drawer.Screen name="Rewards" component={RewardsScreen} options={{ drawerLabel: t('rewards') }} />
+      <Drawer.Screen name="Support" component={SupportScreen} options={{ drawerLabel: t('support') }} />
     </Drawer.Navigator>
   );
 }
 
 export default function App() {
   return (
-      <NavigationContainer>
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="Splash" component={SplashScreen} />
-          <Stack.Screen name="LanguageSelection" component={LanguageSelection} />
-          <Stack.Screen name="Login" component={LoginScreen} />
-          <Stack.Screen name="Signup1" component={SignupScreen1} />
-          <Stack.Screen name="Signup2" component={SignupScreen2} />
-          <Stack.Screen name="Signup3" component={SignupScreen3} />
-          <Stack.Screen name="Signup4" component={SignupScreen4} />
-          <Stack.Screen name="Home" component={DrawerRoutes}  />
-          <Stack.Screen name="Profile" component={ProfileScreen} options={{ headerShown: true}} />
-          <Stack.Screen name="RewardHistory" component={RewardHistoryScreen} options={{ headerShown: true}} />
-          <Stack.Screen name="ReportWaste" component={ReportWaste} />
-          <Stack.Screen name="History" component={HistoryScreen} options={{ headerShown: true}} />
-          <Stack.Screen name="CustomPickup" component={CustomPickupScreen} />
-          <Stack.Screen name="Badges" component={BadgesScreen} />
-          <Stack.Screen name="Leaderboard" component={LeaderboardScreen} />
-        </Stack.Navigator>
-      </NavigationContainer>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <I18nextProvider i18n={i18n}>
+        <NavigationContainer>
+          <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="Splash" component={SplashScreen} />
+            <Stack.Screen name="LanguageSelection" component={LanguageSelection} />
+            <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen name="Signup1" component={SignupScreen1} />
+            <Stack.Screen name="Signup2" component={SignupScreen2} />
+            <Stack.Screen name="Signup3" component={SignupScreen3} />
+            <Stack.Screen name="Signup4" component={SignupScreen4} />
+            <Stack.Screen name="Home" component={DrawerRoutes} />
+            <Stack.Screen name="Profile" component={ProfileScreen} options={{ headerShown: true }} />
+            <Stack.Screen name="RewardHistory" component={RewardHistoryScreen} options={{ headerShown: true }} />
+            <Stack.Screen name="ReportWaste" component={ReportWaste} />
+            <Stack.Screen name="ReportHistory" component={HistoryScreen} options={{ headerShown: true }} />
+            <Stack.Screen name="CustomPickup" component={CustomPickupScreen} />
+            <Stack.Screen name="Badges" component={BadgesScreen} />
+            <Stack.Screen name="Leaderboard" component={LeaderboardScreen} />
+            <Stack.Screen name="Feedback" component={FeedbackScreen} options={{ headerShown: true }}/>
+          </Stack.Navigator>
+        </NavigationContainer>
+      </I18nextProvider>
+    </GestureHandlerRootView>
   );
 }

@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useLayoutEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   View,
   Text,
@@ -13,13 +14,19 @@ import {
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Geolocation from 'react-native-geolocation-service';
 import Geocoder from 'react-native-geocoding';
+import { useNavigation } from '@react-navigation/native';
 
 const SERVICE_FEE = 200;
-
-// 🔐 Replace this with your actual Google Maps API Key
 Geocoder.init('YOUR_GOOGLE_MAPS_API_KEY');
 
 const CustomPickupScreen: React.FC = () => {
+  const { t } = useTranslation();
+  const navigation = useNavigation();
+
+  useLayoutEffect(() => {
+    navigation.setOptions({ title: t('customPickup') });
+  }, [navigation, t]);
+
   const [address, setAddress] = useState('');
   const [date, setDate] = useState<Date | null>(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -27,16 +34,20 @@ const CustomPickupScreen: React.FC = () => {
 
   const handleConfirmPickup = () => {
     if (!address.trim() || !date || !timeSlot) {
-      Alert.alert('Missing Fields', 'Please fill out all fields.');
+      Alert.alert(t('missingFields'), t('pleaseFillAllFields'));
       return;
     }
 
     Alert.alert(
-      'Pickup Requested',
-      `Your request has been submitted.\n\nDate: ${date.toDateString()}\nTime Slot: ${timeSlot}\nAddress: ${address}\n\nA fee of Rs. ${SERVICE_FEE} will be applied.`
+      t('pickupRequested'),
+      t('pickupSuccessMessage', {
+        date: date.toDateString(),
+        timeSlot,
+        address,
+        fee: SERVICE_FEE,
+      })
     );
 
-    // Reset form
     setAddress('');
     setDate(null);
     setTimeSlot(null);
@@ -49,7 +60,7 @@ const CustomPickupScreen: React.FC = () => {
           PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
         );
         if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
-          Alert.alert('Permission denied', 'Location permission is required.');
+          Alert.alert(t('permissionDenied'), t('locationPermissionRequired'));
           return;
         }
       }
@@ -62,11 +73,11 @@ const CustomPickupScreen: React.FC = () => {
             const formattedAddress = geoRes.results[0].formatted_address;
             setAddress(formattedAddress);
           } catch (err) {
-            Alert.alert('Geocoding error', 'Could not get address.');
+            Alert.alert(t('geocodingError'), t('couldNotGetAddress'));
           }
         },
         (error) => {
-          Alert.alert('Location Error', error.message);
+          Alert.alert(t('locationError'), error.message);
         },
         {
           enableHighAccuracy: true,
@@ -75,81 +86,78 @@ const CustomPickupScreen: React.FC = () => {
         }
       );
     } catch (e) {
-      Alert.alert('Error', 'Something went wrong.');
+      Alert.alert(t('error'), t('somethingWentWrong'));
     }
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#F4F6F8' }}>
-      <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 40 }} keyboardShouldPersistTaps="handled">
-        <Text style={styles.heading}>Custom Pickup Request</Text>
+    <ScrollView contentContainerStyle={styles.container}>
+      <Text style={styles.heading}>{t('customPickup')}</Text>
 
-        <Text style={styles.description}>
-          For large events, hotels, or businesses, request special garbage pickups. A service fee of Rs. {SERVICE_FEE} per request will be applied.
+      <Text style={styles.description}>
+        {t('customPickupDescription', { fee: SERVICE_FEE })}
+      </Text>
+
+      <Text style={styles.label}>{t('pickupAddress')} *</Text>
+      <TextInput
+        placeholder={t('enterFullAddress')}
+        style={styles.input}
+        value={address}
+        onChangeText={setAddress}
+      />
+
+      <TouchableOpacity style={styles.locationButton} onPress={useCurrentLocation}>
+        <Text style={styles.locationButtonText}>{t('useCurrentLocation')}</Text>
+      </TouchableOpacity>
+
+      <Text style={styles.label}>{t('pickupDate')} *</Text>
+      <TouchableOpacity style={styles.datePicker} onPress={() => setShowDatePicker(true)}>
+        <Text style={{ color: date ? '#000' : '#999' }}>
+          {date ? date.toDateString() : t('selectDate')}
         </Text>
+      </TouchableOpacity>
 
-        <Text style={styles.label}>Pickup Address *</Text>
-        <TextInput
-          placeholder="Enter full address"
-          style={styles.input}
-          value={address}
-          onChangeText={setAddress}
+      {showDatePicker && (
+        <DateTimePicker
+          value={date || new Date()}
+          mode="date"
+          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+          onChange={(_, selectedDate?: Date) => {
+            setShowDatePicker(false);
+            if (selectedDate) setDate(selectedDate);
+          }}
         />
+      )}
 
-        <TouchableOpacity style={styles.locationButton} onPress={useCurrentLocation}>
-          <Text style={styles.locationButtonText}>Use My Current Location</Text>
-        </TouchableOpacity>
-
-        <Text style={styles.label}>Preferred Pickup Date *</Text>
-        <TouchableOpacity
-          style={styles.datePicker}
-          onPress={() => setShowDatePicker(true)}
-        >
-          <Text style={{ color: date ? '#000' : '#999' }}>
-            {date ? date.toDateString() : 'Select a date'}
-          </Text>
-        </TouchableOpacity>
-
-        {showDatePicker && (
-          <DateTimePicker
-            value={date || new Date()}
-            mode="date"
-            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-            onChange={(_, selectedDate?: Date) => {
-              setShowDatePicker(false);
-              if (selectedDate) setDate(selectedDate);
-            }}
-          />
-        )}
-
-        <Text style={styles.label}>Preferred Time Slot *</Text>
-        <View style={styles.slotContainer}>
-          {['Morning (6:00 AM - 10:00 AM)', 'Afternoon (12:00 PM - 4:00 PM)', 'Evening (5:00 PM - 7:00 PM)'].map((slot) => (
-            <TouchableOpacity
-              key={slot}
+      <Text style={styles.label}>{t('timeSlot')} *</Text>
+      <View style={styles.slotContainer}>
+        {[t('slotMorning'), t('slotAfternoon'), t('slotEvening')].map((slot) => (
+          <TouchableOpacity
+            key={slot}
+            style={[
+              styles.slotButton,
+              timeSlot === slot && styles.selectedSlotButton,
+            ]}
+            onPress={() => setTimeSlot(slot)}
+          >
+            <Text
               style={[
-                styles.slotButton,
-                timeSlot === slot && styles.selectedSlotButton,
+                styles.slotText,
+                timeSlot === slot && styles.selectedSlotText,
               ]}
-              onPress={() => setTimeSlot(slot)}
             >
-              <Text
-                style={[
-                  styles.slotText,
-                  timeSlot === slot && styles.selectedSlotText,
-                ]}
-              >
-                {slot}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
+              {slot}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
 
-        <TouchableOpacity style={styles.button} onPress={handleConfirmPickup}>
-          <Text style={styles.buttonText}>Confirm Pickup - Rs. {SERVICE_FEE}</Text>
-        </TouchableOpacity>
-      </ScrollView>
-    </View>
+      <TouchableOpacity style={styles.button} onPress={handleConfirmPickup}>
+        <Text style={styles.buttonText}>
+          {t('confirmPickupWithFee', { fee: SERVICE_FEE })}
+        </Text>
+      </TouchableOpacity>
+    </ScrollView>
   );
 };
 
@@ -157,9 +165,9 @@ export default CustomPickupScreen;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#F4F6F8',
-    padding: 20,
+    padding: 24,
+    backgroundColor: '#F9F9F9',
+    flexGrow: 1,
   },
   heading: {
     fontSize: 24,
@@ -232,10 +240,11 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   button: {
-    backgroundColor: '#1E90FF',
-    paddingVertical: 14,
+    backgroundColor: '#28a745',
+    paddingVertical: 16,
     borderRadius: 8,
     alignItems: 'center',
+    marginTop: 10,
   },
   buttonText: {
     color: '#fff',

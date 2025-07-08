@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useLayoutEffect } from 'react';
 import {
   View,
   Text,
@@ -12,10 +12,16 @@ import {
 import { launchImageLibrary } from 'react-native-image-picker';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList } from '../navigation/types'; // adjust path if needed
+import { useTranslation } from 'react-i18next';
+import { RootStackParamList } from '../navigation/types';
 
 const ProfileScreen: React.FC = () => {
+  const { t } = useTranslation();
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+
+  useLayoutEffect(() => {
+    navigation.setOptions({ title: t('Profile') });
+  }, [navigation, t]);
 
   const [profilePic, setProfilePic] = useState<string | null>(null);
   const [phone, setPhone] = useState('9876543210');
@@ -36,35 +42,34 @@ const ProfileScreen: React.FC = () => {
       response => {
         if (response.didCancel) return;
         if (response.errorCode) {
-          Alert.alert('Error', response.errorMessage || 'Image selection failed.');
+          Alert.alert(t('error'), response.errorMessage || t('imageSelectFailed'));
           return;
         }
         const uri = response.assets?.[0]?.uri;
-        if (uri) {
-          setProfilePic(uri);
-        }
+        if (uri) setProfilePic(uri);
       }
     );
   };
 
   const validatePhone = (num: string) => /^9\d{9}$/.test(num);
-  const validateEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const validateEmail = (email: string) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   const handleSave = () => {
     if (!validatePhone(phone)) {
-      Alert.alert('Invalid phone number', 'Phone number must start with 9 and be 10 digits long.');
+      Alert.alert(t('invalidPhone'), t('phoneValidationMessage'));
       return;
     }
     if (!validateEmail(email)) {
-      Alert.alert('Invalid email address');
+      Alert.alert(t('invalidEmail'), t('emailValidationMessage'));
       return;
     }
     setIsEditing(false);
-    Alert.alert('Saved', 'Profile updated successfully.');
+    Alert.alert(t('saved'), t('profileUpdated'));
   };
 
   const handleLogout = () => {
-    Alert.alert('Logged Out', 'You have been logged out.');
+    Alert.alert(t('loggedOut'), t('loggedOutMessage'));
     navigation.reset({
       index: 0,
       routes: [{ name: 'Login' }],
@@ -82,11 +87,11 @@ const ProfileScreen: React.FC = () => {
           }
           style={styles.profileImage}
         />
-        <Text style={styles.editText}>Edit Profile Picture</Text>
+        <Text style={styles.editText}>{t('editProfilePic')}</Text>
       </TouchableOpacity>
 
       <View style={styles.field}>
-        <Text style={styles.label}>Phone Number</Text>
+        <Text style={styles.label}>{t('phone')}</Text>
         <TextInput
           editable={isEditing}
           value={phone}
@@ -97,7 +102,7 @@ const ProfileScreen: React.FC = () => {
       </View>
 
       <View style={styles.field}>
-        <Text style={styles.label}>Email</Text>
+        <Text style={styles.label}>{t('email')}</Text>
         <TextInput
           editable={isEditing}
           value={email}
@@ -108,7 +113,7 @@ const ProfileScreen: React.FC = () => {
       </View>
 
       <View style={styles.field}>
-        <Text style={styles.label}>House Number</Text>
+        <Text style={styles.label}>{t('houseNumber')}</Text>
         <TextInput
           editable={isEditing}
           value={houseNumber}
@@ -118,7 +123,7 @@ const ProfileScreen: React.FC = () => {
       </View>
 
       <View style={styles.field}>
-        <Text style={styles.label}>Ward Number</Text>
+        <Text style={styles.label}>{t('wardNumber')}</Text>
         <TextInput
           editable={isEditing}
           value={wardNumber}
@@ -128,7 +133,7 @@ const ProfileScreen: React.FC = () => {
       </View>
 
       <View style={styles.field}>
-        <Text style={styles.label}>Locality</Text>
+        <Text style={styles.label}>{t('locality')}</Text>
         <TextInput
           editable={isEditing}
           value={locality}
@@ -139,15 +144,18 @@ const ProfileScreen: React.FC = () => {
 
       {isEditing ? (
         <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-          <Text style={styles.saveText}>Save</Text>
+          <Text style={styles.saveText}>{t('save')}</Text>
         </TouchableOpacity>
       ) : (
         <>
-          <TouchableOpacity style={styles.editButton} onPress={() => setIsEditing(true)}>
-            <Text style={styles.editButtonText}>Edit</Text>
+          <TouchableOpacity
+            style={styles.editButton}
+            onPress={() => setIsEditing(true)}
+          >
+            <Text style={styles.editButtonText}>{t('edit')}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-            <Text style={styles.logoutText}>Logout</Text>
+            <Text style={styles.logoutText}>{t('logout')}</Text>
           </TouchableOpacity>
         </>
       )}

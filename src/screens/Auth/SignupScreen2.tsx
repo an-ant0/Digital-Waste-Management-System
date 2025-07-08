@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   View,
   Text,
@@ -17,6 +18,7 @@ import { RootStackParamList } from '../../navigation/types';
 type Props = NativeStackScreenProps<RootStackParamList, 'Signup2'>;
 
 const SignupScreen2: React.FC<Props> = ({ navigation, route }) => {
+  const { t } = useTranslation();
   const [profilePic, setProfilePic] = useState<string | null>(null);
   const [idType, setIdType] = useState<string>('');
   const [idNumber, setIdNumber] = useState('');
@@ -31,7 +33,7 @@ const SignupScreen2: React.FC<Props> = ({ navigation, route }) => {
 
   const handleNext = () => {
     if (!profilePic || !idType || !idNumber || !idPhoto) {
-      Alert.alert('Missing Information', 'Please fill in all required fields.');
+      Alert.alert(t('missingInfoTitle'), t('missingInfoMessage'));
       return;
     }
 
@@ -46,11 +48,11 @@ const SignupScreen2: React.FC<Props> = ({ navigation, route }) => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.heading}>Signup - Step 2</Text>
+      <Text style={styles.heading}>{t('signupStep2')}</Text>
 
       {/* Profile Picture Section */}
       <View style={styles.sectionBox}>
-        <Text style={styles.sectionTitle}>Upload Profile Picture</Text>
+        <Text style={styles.sectionTitle}>{t('profilePicture')}</Text>
         {profilePic ? (
           <Image source={{ uri: profilePic }} style={styles.imagePreview} />
         ) : (
@@ -58,29 +60,29 @@ const SignupScreen2: React.FC<Props> = ({ navigation, route }) => {
             style={styles.imageButton}
             onPress={() => handleSelectImage(setProfilePic)}
           >
-            <Text style={styles.imageButtonText}>Choose Profile Picture</Text>
+            <Text style={styles.imageButtonText}>{t('chooseProfile')}</Text>
           </TouchableOpacity>
         )}
       </View>
 
       {/* Identity Section */}
       <View style={styles.sectionBox}>
-        <Text style={styles.sectionTitle}>Identity Information</Text>
+        <Text style={styles.sectionTitle}>{t('identityInfo')}</Text>
 
         {/* ID Type Dropdown */}
         <View style={styles.dropdownContainer}>
-          <Text style={styles.dropdownLabel}>Type of Identification</Text>
+          <Text style={styles.dropdownLabel}>{t('idType')}</Text>
           <View style={styles.pickerWrapper}>
             <Picker
               selectedValue={idType}
               onValueChange={(itemValue: string) => setIdType(itemValue)}
-              mode="dropdown" // Android only, iOS ignores
+              mode="dropdown"
               style={styles.picker}
             >
-              <Picker.Item label="Select ID Type..." value="" />
-              <Picker.Item label="Citizenship" value="Citizenship" />
-              <Picker.Item label="Passport" value="Passport" />
-              <Picker.Item label="Voter ID" value="VoterID" />
+              <Picker.Item label={t('selectIdType')} value="" />
+              <Picker.Item label={t('citizenship')} value="Citizenship" />
+              <Picker.Item label={t('passport')} value="Passport" />
+              <Picker.Item label={t('voterId')} value="VoterID" />
             </Picker>
           </View>
         </View>
@@ -93,21 +95,21 @@ const SignupScreen2: React.FC<Props> = ({ navigation, route }) => {
             style={styles.imageButton}
             onPress={() => handleSelectImage(setIdPhoto)}
           >
-            <Text style={styles.imageButtonText}>Upload ID Photo</Text>
+            <Text style={styles.imageButtonText}>{t('uploadId')}</Text>
           </TouchableOpacity>
         )}
 
         {/* ID Number */}
         <TextInput
           style={styles.input}
-          placeholder="Identification Number"
+          placeholder={t('idNumber')}
           value={idNumber}
           onChangeText={setIdNumber}
         />
       </View>
 
       <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
-        <Text style={styles.nextButtonText}>Next</Text>
+        <Text style={styles.nextButtonText}>{t('next')}</Text>
       </TouchableOpacity>
     </ScrollView>
   );

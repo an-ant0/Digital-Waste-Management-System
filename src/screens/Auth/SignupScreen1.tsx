@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
 
 type RootStackParamList = {
   Signup1: undefined;
@@ -28,6 +29,7 @@ type RootStackParamList = {
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Signup1'>;
 
 const SignupScreen1: React.FC = () => {
+  const { t } = useTranslation();
   const navigation = useNavigation<NavigationProp>();
 
   const [firstName, setFirstName] = useState('');
@@ -39,7 +41,7 @@ const SignupScreen1: React.FC = () => {
 
   const handleNext = () => {
     if (!firstName || !lastName || !homeNumber || !wardNumber || !localityName) {
-      Alert.alert('Missing Info', 'Please fill all required fields.');
+      Alert.alert(t('missingInfoTitle'), t('missingInfoMessage'));
       return;
     }
 
@@ -59,26 +61,26 @@ const SignupScreen1: React.FC = () => {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.heading}>Signup - Step 1</Text>
+        <Text style={styles.heading}>{t('signupStep1')}</Text>
 
         {/* Name Section */}
         <View style={styles.sectionBox}>
-          <Text style={styles.sectionTitle}>Name</Text>
+          <Text style={styles.sectionTitle}>{t('name')}</Text>
           <TextInput
             style={styles.input}
-            placeholder="First Name *"
+            placeholder={t('firstName') + ' *'}
             value={firstName}
             onChangeText={setFirstName}
           />
           <TextInput
             style={styles.input}
-            placeholder="Middle Name"
+            placeholder={t('middleName')}
             value={middleName}
             onChangeText={setMiddleName}
           />
           <TextInput
             style={styles.input}
-            placeholder="Last Name *"
+            placeholder={t('lastName') + ' *'}
             value={lastName}
             onChangeText={setLastName}
           />
@@ -86,31 +88,31 @@ const SignupScreen1: React.FC = () => {
 
         {/* Address Section */}
         <View style={styles.sectionBox}>
-          <Text style={styles.sectionTitle}>Address</Text>
+          <Text style={styles.sectionTitle}>{t('address')}</Text>
           <TextInput
             style={styles.input}
-            placeholder="Home Number *"
+            placeholder={t('homeNumber') + ' *'}
             keyboardType="number-pad"
             value={homeNumber}
             onChangeText={setHomeNumber}
           />
           <TextInput
             style={styles.input}
-            placeholder="Ward Number *"
+            placeholder={t('wardNumber') + ' *'}
             keyboardType="number-pad"
             value={wardNumber}
             onChangeText={setWardNumber}
           />
           <TextInput
             style={styles.input}
-            placeholder="Locality Name *"
+            placeholder={t('localityName') + ' *'}
             value={localityName}
             onChangeText={setLocalityName}
           />
         </View>
 
         <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
-          <Text style={styles.nextButtonText}>Next</Text>
+          <Text style={styles.nextButtonText}>{t('next')}</Text>
         </TouchableOpacity>
       </ScrollView>
     </KeyboardAvoidingView>

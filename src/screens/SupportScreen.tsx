@@ -9,16 +9,20 @@ import {
 } from 'react-native';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation/types';
+import { useTranslation } from 'react-i18next';
 
 const SupportScreen: React.FC = () => {
+  const { t } = useTranslation();
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
-  const handleEmailPress = () => {
-    Linking.openURL('mailto:$(mail)');
+  navigation.setOptions({ title: t('support') });
+
+  const handleEmailPress = (email: string) => {
+    Linking.openURL(`mailto:${email}`);
   };
 
-  const handlePhonePress = () => {
-    Linking.openURL('tel:$(phone)');
+  const handlePhonePress = (phone: string) => {
+    Linking.openURL(`tel:${phone}`);
   };
 
   const handleFeedbackPress = () => {
@@ -27,46 +31,37 @@ const SupportScreen: React.FC = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.heading}>Support</Text>
+      <Text style={styles.heading}>{t('support')}</Text>
 
       <View style={styles.section}>
-        <Text style={styles.label}>Email Support:</Text>
-        <TouchableOpacity onPress={handleEmailPress}>
+        <Text style={styles.label}>{t('emailSupport')}</Text>
+        <TouchableOpacity onPress={() => handleEmailPress('ananttodi00@gmail.com')}>
           <Text style={styles.link}>ananttodi00@gmail.com</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={handleEmailPress}>
+        <TouchableOpacity onPress={() => handleEmailPress('rishabkhatiwada300@gmail.com')}>
           <Text style={styles.link}>rishabkhatiwada300@gmail.com</Text>
         </TouchableOpacity>
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.label}>Phone Support:</Text>
-        <TouchableOpacity onPress={handlePhonePress}>
+        <Text style={styles.label}>{t('phoneSupport')}</Text>
+        <TouchableOpacity onPress={() => handlePhonePress('+9779806053850')}>
           <Text style={styles.link}>+977 980-6053850</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={handlePhonePress}>
+        <TouchableOpacity onPress={() => handlePhonePress('+9779862339743')}>
           <Text style={styles.link}>+977 986-2339743</Text>
         </TouchableOpacity>
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.label}>Frequently Asked Questions (FAQ):</Text>
-        <Text style={styles.faqItem}>
-          Q: How do I report uncollected garbage or illegal dumping in my area?{"\n"}
-          A: You can easily report waste issues by clicking on the "Report Waste" button in the app. Upload a photo, describe the issue, and confirm your location.
-        </Text>
-        <Text style={styles.faqItem}>
-          Q: How are reward points earned and redeemed?{"\n"}
-          A: You earn points when your waste report is verified by the admin. These points can be redeemed for benefits like mobile top-ups or discounts.
-        </Text>
-        <Text style={styles.faqItem}>
-          Q: Can I track the garbage truck or see collection schedules?{"\n"}
-          A: Yes, the app provides real-time truck tracking and notifies you of garbage collection schedules via SMS and app alerts.
-        </Text>
+        <Text style={styles.label}>{t('faq')}</Text>
+        <Text style={styles.faqItem}>{t('faq1')}</Text>
+        <Text style={styles.faqItem}>{t('faq2')}</Text>
+        <Text style={styles.faqItem}>{t('faq3')}</Text>
       </View>
 
       <TouchableOpacity style={styles.feedbackButton} onPress={handleFeedbackPress}>
-        <Text style={styles.feedbackButtonText}>Send Feedback</Text>
+        <Text style={styles.feedbackButtonText}>{t('sendFeedback')}</Text>
       </TouchableOpacity>
     </ScrollView>
   );

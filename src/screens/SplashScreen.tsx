@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import i18n from '../i18n';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
@@ -6,6 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 type RootStackParamList = {
   Splash: undefined;
   LanguageSelection: undefined;
+  Login: undefined;
 };
 
 type SplashScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Splash'>;

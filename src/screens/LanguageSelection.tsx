@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import i18n from '../i18n';
 
 type RootStackParamList = {
   Splash: undefined;
@@ -18,6 +19,7 @@ const LanguageSelection: React.FC = () => {
   const handleLanguageSelect = async (language: 'en' | 'np') => {
     try {
       await AsyncStorage.setItem('appLanguage', language);
+      i18n.changeLanguage(language === 'np' ? 'ne' : 'en'); 
       console.log('Language saved:', language);
       navigation.navigate('Login');
     } catch (error) {

@@ -1,19 +1,24 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 const BadgesScreen: React.FC = () => {
+  const { t } = useTranslation();
+
+  const badges = [
+    { name: t('bronze'), criteria: t('bronzeCriteria') },
+    { name: t('silver'), criteria: t('silverCriteria') },
+    { name: t('gold'), criteria: t('goldCriteria') },
+    { name: t('platinum'), criteria: t('platinumCriteria') },
+  ];
+
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.heading}>Your Rank: Silver</Text>
+      <Text style={styles.heading}>{t('yourRank', { rank: t('silver') })}</Text>
 
       <View style={styles.section}>
-        <Text style={styles.subheading}>Available Badge Levels</Text>
-        {[
-          { name: 'Bronze', criteria: 'Submit 5 verified reports' },
-          { name: 'Silver', criteria: 'Submit 20 verified reports' },
-          { name: 'Gold', criteria: 'Submit 50 verified reports' },
-          { name: 'Platinum', criteria: 'Submit 100 verified reports' },
-        ].map((badge, index) => (
+        <Text style={styles.subheading}>{t('availableBadgeLevels')}</Text>
+        {badges.map((badge, index) => (
           <View key={index} style={styles.badgeBox}>
             <Text style={styles.badgeTitle}>{badge.name}</Text>
             <Text style={styles.badgeCriteria}>{badge.criteria}</Text>

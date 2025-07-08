@@ -10,10 +10,12 @@ import {
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../navigation/types';
+import { useTranslation } from 'react-i18next';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Signup3'>;
 
 const SignupScreen3: React.FC<Props> = ({ navigation, route }) => {
+  const { t } = useTranslation();
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');
@@ -22,16 +24,15 @@ const SignupScreen3: React.FC<Props> = ({ navigation, route }) => {
 
   const handleNext = () => {
     if (!phone || !email || !otp || !password || !confirmPassword) {
-      Alert.alert('Missing Fields', 'Please fill all the fields.');
+      Alert.alert(t('missingFieldsTitle'), t('missingFieldsMessage'));
       return;
     }
 
     if (password !== confirmPassword) {
-      Alert.alert('Mismatch', 'Passwords do not match.');
+      Alert.alert(t('passwordMismatchTitle'), t('passwordMismatchMessage'));
       return;
     }
 
-    // ✅ Proceed to next screen with all collected data
     const allData = {
       ...route.params,
       phone,
@@ -40,59 +41,54 @@ const SignupScreen3: React.FC<Props> = ({ navigation, route }) => {
       password,
     };
 
-    console.log('Navigating to Signup4 with:', allData);
-
     navigation.navigate('Signup4', allData);
   };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.heading}>Signup - Step 3</Text>
+      <Text style={styles.heading}>{t('signupStep3')}</Text>
 
-      {/* Section 1: Contact Info */}
       <View style={styles.sectionBox}>
-        <Text style={styles.sectionTitle}>Contact Information</Text>
+        <Text style={styles.sectionTitle}>{t('contactInfo')}</Text>
         <TextInput
           style={styles.input}
-          placeholder="Phone Number"
+          placeholder={t('phoneNumber')}
           keyboardType="phone-pad"
           value={phone}
           onChangeText={setPhone}
         />
         <TextInput
           style={styles.input}
-          placeholder="Email Address"
+          placeholder={t('email')}
           keyboardType="email-address"
           value={email}
           onChangeText={setEmail}
         />
       </View>
 
-      {/* Section 2: OTP */}
       <View style={styles.sectionBox}>
-        <Text style={styles.sectionTitle}>OTP Verification</Text>
+        <Text style={styles.sectionTitle}>{t('otpVerification')}</Text>
         <TextInput
           style={styles.input}
-          placeholder="Enter OTP"
+          placeholder={t('enterOtp')}
           keyboardType="number-pad"
           value={otp}
           onChangeText={setOtp}
         />
       </View>
 
-      {/* Section 3: Password */}
       <View style={styles.sectionBox}>
-        <Text style={styles.sectionTitle}>Create Password</Text>
+        <Text style={styles.sectionTitle}>{t('createPassword')}</Text>
         <TextInput
           style={styles.input}
-          placeholder="Enter Password"
+          placeholder={t('enterPassword')}
           secureTextEntry
           value={password}
           onChangeText={setPassword}
         />
         <TextInput
           style={styles.input}
-          placeholder="Confirm Password"
+          placeholder={t('confirmPassword')}
           secureTextEntry
           value={confirmPassword}
           onChangeText={setConfirmPassword}
@@ -100,7 +96,7 @@ const SignupScreen3: React.FC<Props> = ({ navigation, route }) => {
       </View>
 
       <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
-        <Text style={styles.nextButtonText}>Next</Text>
+        <Text style={styles.nextButtonText}>{t('next')}</Text>
       </TouchableOpacity>
     </ScrollView>
   );

@@ -1,4 +1,5 @@
 import React, { useLayoutEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import * as Progress from 'react-native-progress';
 
 import {
@@ -18,12 +19,20 @@ type RootStackParamList = {
   Leaderboard: undefined;
 };
 
+interface CardProps {
+  id: string;
+  title: string;
+  value: string | number;
+  description: string;
+}
+
 const HomeScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const { t } = useTranslation();
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitle: 'Home',
+      headerTitle: t('home'),
       headerRight: () => (
         <TouchableOpacity
           style={{ marginRight: 16 }}
@@ -33,44 +42,37 @@ const HomeScreen: React.FC = () => {
         </TouchableOpacity>
       ),
     });
-  }, [navigation]);
+  }, [navigation, t]);
 
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
-        <Card title="Waste Reported" value="12" description="Reports you’ve submitted" />
-        <Card title="Verified Reported" value="9" description="Reports verified by authority" />
-        <Card title="Points Available" value="340" description="Your reward points" />
-        <Card title="Redeemed Points" value="120" description="Points you’ve used" />
-        <Card title="Current Report Status" value="On Process" description="Latest report status" />
-        <Card title="Level / Badges" value="Silver" description="Your achievement level" />
-        <Card title="Top User Rank" value="#5" description="You're among the top waste reporters" />
+        <Card id="wasteReported" title={t('wasteReported')} value="12" description={t('wasteReportedDesc')} />
+        <Card id="verifiedReported" title={t('verifiedReported')} value="9" description={t('verifiedReportedDesc')} />
+        <Card id="pointsAvailable" title={t('pointsAvailable')} value="340" description={t('pointsAvailableDesc')} />
+        <Card id="redeemedPoints" title={t('redeemedPoints')} value="120" description={t('redeemedPointsDesc')} />
+        <Card id="reportStatus" title={t('reportStatus')} value={t('onProcess')} description={t('reportStatusDesc')} />
+        <Card id="levelBadges" title={t('levelBadges')} value="Silver" description={t('achievementLevel')} />
+        <Card id="topUserRank" title={t('topUserRank')} value="#5" description={t('topRankDesc')} />
       </ScrollView>
     </View>
   );
 };
 
-export default HomeScreen;
-
-type CardProps = {
-  title: string;
-  value: string | number;
-  description: string;
-};
-
-const Card: React.FC<CardProps> = ({ title, value, description }) => {
+const Card: React.FC<CardProps> = ({ id, title, value, description }) => {
+  const { t } = useTranslation();
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   const handlePress = () => {
-    if (title === 'Level / Badges') {
+    if (id === 'levelBadges') {
       navigation.navigate('Badges');
-    } else if (title === 'Top User Rank') {
+    } else if (id === 'topUserRank') {
       navigation.navigate('Leaderboard');
     }
   };
 
-  const isClickable = title === 'Level / Badges' || title === 'Top User Rank';
-  const showProgress = title === 'Level / Badges' || title === 'Top User Rank';
+  const isClickable = id === 'levelBadges' || id === 'topUserRank';
+  const showProgress = id === 'levelBadges' || id === 'topUserRank';
 
   return (
     <TouchableOpacity
@@ -86,7 +88,7 @@ const Card: React.FC<CardProps> = ({ title, value, description }) => {
       {showProgress && (
         <View style={styles.progressContainer}>
           <Progress.Bar
-            progress={0.65} // You can dynamically calculate progress here
+            progress={0.65}
             width={null}
             height={10}
             borderRadius={5}
@@ -94,13 +96,14 @@ const Card: React.FC<CardProps> = ({ title, value, description }) => {
             unfilledColor="#E0E0E0"
             borderWidth={0}
           />
-          <Text style={styles.progressLabel}>65% to Gold Level</Text>
+          <Text style={styles.progressLabel}>{t('progressToGold')}</Text>
         </View>
       )}
     </TouchableOpacity>
   );
 };
 
+export default HomeScreen;
 
 const styles = StyleSheet.create({
   container: {

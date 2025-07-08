@@ -7,7 +7,7 @@ import {
   SafeAreaView,
   StatusBar,
 } from 'react-native';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import { useTranslation } from 'react-i18next';
 
 interface User {
   id: string;
@@ -27,6 +27,8 @@ const mockTopUsers: User[] = [
 ];
 
 const LeaderboardScreen: React.FC = () => {
+  const { t } = useTranslation();
+
   const renderItem = ({ item }: { item: User }) => (
     <View style={styles.userRow}>
       <Text style={styles.rankText}>
@@ -34,7 +36,9 @@ const LeaderboardScreen: React.FC = () => {
       </Text>
       <View style={styles.nameContainer}>
         <Text style={styles.name}>{item.name}</Text>
-        <Text style={styles.points}>{item.points} pts</Text>
+        <Text style={styles.points}>
+          {item.points} {t('points')}
+        </Text>
       </View>
     </View>
   );
@@ -42,7 +46,7 @@ const LeaderboardScreen: React.FC = () => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor="#1E90FF" barStyle="light-content" />
-      <Text style={styles.header}>🏆 Leaderboard</Text>
+      <Text style={styles.header}>🏆 {t('leaderboardTitle')}</Text>
       <FlatList
         data={mockTopUsers}
         renderItem={renderItem}

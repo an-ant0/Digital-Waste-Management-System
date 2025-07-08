@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useLayoutEffect } from 'react';
 import {
   View,
   Text,
@@ -6,15 +6,15 @@ import {
   FlatList,
   TouchableOpacity,
   TextInput,
+  Alert,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons'; 
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Modal from 'react-native-modal';
-import { Alert } from 'react-native';
-import { useLayoutEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/types';
+import { useTranslation } from 'react-i18next';
 
 type RewardOption = {
   id: string;
@@ -45,15 +45,33 @@ const rewards: RewardOption[] = [
 ];
 
 const RewardsScreen: React.FC = () => {
+  const { t } = useTranslation();
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList, 'Rewards'>>();
+
   const [availablePoints, setAvailablePoints] = useState(2000);
   const [redeemedPoints, setRedeemedPoints] = useState(120);
   const [selectedReward, setSelectedReward] = useState<RewardOption | null>(null);
   const [isModalVisible, setModalVisible] = useState(false);
   const [phone, setPhone] = useState('');
 
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity
+          onPress={() => navigation.navigate('RewardHistory')}
+          style={{ marginRight: 16 }}
+        >
+          <Icon name="history" size={28} color="#1E90FF" />
+        </TouchableOpacity>
+      ),
+      title: t('rewards'),
+      headerShown: true,
+    });
+  }, [navigation, t]);
+
   const handleRedeemPress = (reward: RewardOption) => {
     if (availablePoints < reward.pointsRequired) {
-      Alert.alert('Not enough points to redeem this reward.');
+      Alert.alert(t('notEnoughPoints'));
       return;
     }
 
@@ -70,35 +88,18 @@ const RewardsScreen: React.FC = () => {
     setRedeemedPoints(prev => prev + reward.pointsRequired);
     setModalVisible(false);
     setPhone('');
-    Alert.alert(`Reward "${reward.title}" redeemed successfully!`);
+    Alert.alert(t('redeemSuccess', { title: reward.title }));
   };
 
   const handleConfirm = () => {
     if (!phone || phone.length < 10) {
-      Alert.alert('Please enter a valid phone number.');
+      Alert.alert(t('pleaseEnterPhone'));
       return;
     }
     if (selectedReward) {
       processRedemption(selectedReward);
     }
   };
-
-const navigation = useNavigation<StackNavigationProp<RootStackParamList, 'Rewards'>>();
-
-useLayoutEffect(() => {
-  navigation.setOptions({
-    headerRight: () => (
-      <TouchableOpacity
-        onPress={() => navigation.navigate('RewardHistory')}
-        style={{ marginRight: 16 }}
-      >
-        <Icon name="history" size={28} color="#1E90FF" />
-      </TouchableOpacity>
-    ),
-    title: 'Rewards',
-    headerShown: true,
-  });
-}, [navigation]);
 
   const renderItem = ({ item }: { item: RewardOption }) => (
     <View style={styles.card}>
@@ -107,24 +108,24 @@ useLayoutEffect(() => {
         <Text style={styles.title}>{item.title}</Text>
       </View>
       <Text style={styles.description}>{item.description}</Text>
-      <Text style={styles.points}>Points Required: {item.pointsRequired}</Text>
+      <Text style={styles.points}>{t('pointsRequired')}: {item.pointsRequired}</Text>
       <TouchableOpacity style={styles.redeemBtn} onPress={() => handleRedeemPress(item)}>
-        <Text style={styles.redeemText}>Redeem</Text>
+        <Text style={styles.redeemText}>{t('redeem')}</Text>
       </TouchableOpacity>
     </View>
   );
 
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>Available Rewards</Text>
+      <Text style={styles.heading}>{t('availableRewards')}</Text>
 
       <View style={styles.summaryContainer}>
         <View style={styles.summaryBox}>
-          <Text style={styles.label}>Points Available</Text>
+          <Text style={styles.label}>{t('pointsAvailable')}</Text>
           <Text style={[styles.value, { color: '#28a745' }]}>{availablePoints}</Text>
         </View>
         <View style={styles.summaryBox}>
-          <Text style={styles.label}>Points Redeemed</Text>
+          <Text style={styles.label}>{t('pointsRedeemed')}</Text>
           <Text style={[styles.value, { color: '#dc3545' }]}>{redeemedPoints}</Text>
         </View>
       </View>
@@ -138,7 +139,7 @@ useLayoutEffect(() => {
 
       <Modal isVisible={isModalVisible}>
         <View style={styles.modalContainer}>
-          <Text style={styles.modalTitle}>Enter Phone Number</Text>
+          <Text style={styles.modalTitle}>{t('enterPhoneNumber')}</Text>
           <TextInput
             style={styles.input}
             placeholder="e.g. 9800000000"
@@ -147,10 +148,10 @@ useLayoutEffect(() => {
             onChangeText={setPhone}
           />
           <TouchableOpacity style={styles.confirmBtn} onPress={handleConfirm}>
-            <Text style={styles.confirmText}>Next</Text>
+            <Text style={styles.confirmText}>{t('next')}</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => setModalVisible(false)}>
-            <Text style={{ color: '#999', marginTop: 10 }}>Cancel</Text>
+            <Text style={{ color: '#999', marginTop: 10 }}>{t('cancel')}</Text>
           </TouchableOpacity>
         </View>
       </Modal>

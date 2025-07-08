@@ -4,12 +4,10 @@ import {
   Text,
   StyleSheet,
   FlatList,
-  ScrollView,
-  TouchableOpacity,
   Alert,
 } from 'react-native';
-
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { useTranslation } from 'react-i18next';
 
 type RewardItem = {
   id: string;
@@ -26,7 +24,6 @@ const rewardData: RewardItem[] = [
   { id: '4', type: 'redeemed', points: 100, date: '2025-06-24', description: 'Garbage Bag Purchase' },
 ];
 
-// Calculate totals
 const totalEarned = rewardData
   .filter(item => item.type === 'earned')
   .reduce((sum, item) => sum + item.points, 0);
@@ -36,6 +33,8 @@ const totalRedeemed = rewardData
   .reduce((sum, item) => sum + item.points, 0);
 
 const RewardHistoryScreen: React.FC = () => {
+  const { t } = useTranslation();
+
   const renderItem = ({ item }: { item: RewardItem }) => (
     <View style={styles.card}>
       <View style={styles.row}>
@@ -46,40 +45,39 @@ const RewardHistoryScreen: React.FC = () => {
           style={{ marginRight: 6 }}
         />
         <Text style={[styles.type, item.type === 'earned' ? styles.earnedText : styles.redeemedText]}>
-          {item.type === 'earned' ? 'Points Earned' : 'Points Redeemed'}
+          {item.type === 'earned' ? t('pointsAvailable') : t('redeemedPoints')}
         </Text>
       </View>
-      <Text style={styles.points}>{item.points} pts</Text>
+      <Text style={styles.points}>{item.points} {t('points')}</Text>
       <Text style={styles.date}>{item.date}</Text>
-      <Text style={styles.description}>{item.description}</Text>
+      <Text style={styles.description}>{t(item.description) || item.description}</Text>
     </View>
   );
 
   const handleRedeemPress = () => {
-    Alert.alert('Redeem Rewards', 'Redirecting to redeem rewards page...');
-    // You can navigate to redeem screen here if available
+    Alert.alert(t('redeemedPoints'), t('redirecting...')); // Placeholder
   };
 
   return (
-<View style={styles.container}>
-  <FlatList
-    ListHeaderComponent={
-      <View>
-        <Text style={styles.heading}>Your Rewards</Text>
-          <View style={styles.totalBox}>
-            <Text style={styles.totalLabel}>Total Redeemed</Text>
-            <Text style={[styles.totalPoints, { color: '#dc3545' }]}>{totalRedeemed} pts</Text>
+    <View style={styles.container}>
+      <FlatList
+        ListHeaderComponent={
+          <View>
+            <Text style={styles.heading}>{t('leaderboardTitle')}</Text>
+            <View style={styles.totalBox}>
+              <Text style={styles.totalLabel}>{t('redeemedPoints')}</Text>
+              <Text style={[styles.totalPoints, { color: '#dc3545' }]}>{totalRedeemed} {t('points')}</Text>
+            </View>
           </View>
-        </View>
-    }
-    data={rewardData}
-    renderItem={renderItem}
-    keyExtractor={item => item.id}
-    contentContainerStyle={{ paddingBottom: 80 }}
-  />
-</View>
-  )
-}
+        }
+        data={rewardData}
+        renderItem={renderItem}
+        keyExtractor={item => item.id}
+        contentContainerStyle={{ paddingBottom: 80 }}
+      />
+    </View>
+  );
+};
 
 export default RewardHistoryScreen;
 
@@ -93,13 +91,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: '700',
     marginBottom: 20,
-
     color: '#333',
-  },
-  totalsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginBottom: 16,
   },
   totalBox: {
     backgroundColor: '#fff',

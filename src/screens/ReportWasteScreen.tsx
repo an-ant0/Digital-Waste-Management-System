@@ -17,8 +17,10 @@ import { Picker } from '@react-native-picker/picker';
 import { launchCamera, launchImageLibrary, Asset } from 'react-native-image-picker';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import { useTranslation } from 'react-i18next';
+
 import { RootStackParamList } from '../navigation/types';
-import Icon from 'react-native-vector-icons/MaterialIcons'; 
 
 const wasteTypes = [
   'Household waste',
@@ -30,21 +32,20 @@ const wasteTypes = [
 ];
 
 const ReportWasteScreen: React.FC = () => {
+  const { t } = useTranslation(); // ✅ Declare this early
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
-  // ✅ Move useLayoutEffect inside the component
+  // ✅ Set screen title and header icon
   useLayoutEffect(() => {
     navigation.setOptions({
+      title: t('reportWaste'),
       headerRight: () => (
-        <TouchableOpacity
-          onPress={() => navigation.navigate('History')}
-          style={{ marginRight: 15 }}
-        >
+        <TouchableOpacity onPress={() => navigation.navigate('ReportHistory')} style={{ marginRight: 15 }}>
           <Icon name="history" size={28} color="#1E90FF" />
         </TouchableOpacity>
       ),
     });
-  }, [navigation]);
+  }, [navigation, t]);
 
   const [wasteType, setWasteType] = useState<string>('');
   const [description, setDescription] = useState('');
@@ -58,7 +59,7 @@ const ReportWasteScreen: React.FC = () => {
         setLocation(`Lat: ${latitude.toFixed(5)}, Lon: ${longitude.toFixed(5)}`);
       },
       error => {
-        Alert.alert('Location Error', error.message);
+        Alert.alert(t('locationError'), error.message);
       },
       {
         enableHighAccuracy: true,
@@ -72,8 +73,8 @@ const ReportWasteScreen: React.FC = () => {
     launchImageLibrary({ mediaType: 'photo', quality: 0.7 }, response => {
       if (response.didCancel) return;
       if (response.errorCode) {
-        Alert.alert('Error', response.errorMessage || 'Unknown error');
-      } else if (response.assets && response.assets.length > 0) {
+        Alert.alert(t('error'), response.errorMessage || t('unknownError'));
+      } else if (response.assets?.length) {
         setPhoto(response.assets[0]);
       }
     });
@@ -83,8 +84,8 @@ const ReportWasteScreen: React.FC = () => {
     launchCamera({ mediaType: 'photo', quality: 0.7 }, response => {
       if (response.didCancel) return;
       if (response.errorCode) {
-        Alert.alert('Error', response.errorMessage || 'Unknown error');
-      } else if (response.assets && response.assets.length > 0) {
+        Alert.alert(t('error'), response.errorMessage || t('unknownError'));
+      } else if (response.assets?.length) {
         setPhoto(response.assets[0]);
       }
     });
@@ -92,11 +93,11 @@ const ReportWasteScreen: React.FC = () => {
 
   const handleSubmit = () => {
     if (!wasteType || !description.trim() || !location.trim() || !photo) {
-      Alert.alert('Validation Error', 'All fields are required.');
+      Alert.alert(t('validationError'), t('allFieldsRequired'));
       return;
     }
 
-    Alert.alert('Success', 'Waste report submitted successfully!');
+    Alert.alert(t('success'), t('reportSubmitted'));
     setWasteType('');
     setDescription('');
     setLocation('');
@@ -104,14 +105,11 @@ const ReportWasteScreen: React.FC = () => {
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      style={{ flex: 1 }}
-    >
+    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1 }}>
       <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.heading}>Report Waste</Text>
+        <Text style={styles.heading}>{t('reportWaste')}</Text>
 
-        <Text style={styles.label}>Waste Type *</Text>
+        <Text style={styles.label}>{t('wasteType')} *</Text>
         <View style={styles.pickerContainer}>
           <Picker
             selectedValue={wasteType}
@@ -119,54 +117,50 @@ const ReportWasteScreen: React.FC = () => {
             mode="dropdown"
             style={styles.picker}
           >
-            <Picker.Item label="Type of waste" value="" color="#999" />
+            <Picker.Item label={t('typeOfWaste')} value="" color="#999" />
             {wasteTypes.map(type => (
-              <Picker.Item label={type} value={type} key={type} />
+              <Picker.Item label={t(type)} value={type} key={type} />
             ))}
           </Picker>
         </View>
 
-        <Text style={styles.label}>Description *</Text>
+        <Text style={styles.label}>{t('description')} *</Text>
         <TextInput
           style={[styles.input, { height: 100 }]}
-          placeholder="Describe the waste situation"
+          placeholder={t('describeWaste')}
           multiline
           numberOfLines={4}
           value={description}
           onChangeText={setDescription}
         />
 
-        <Text style={styles.label}>Location *</Text>
+        <Text style={styles.label}>{t('location')} *</Text>
         <TextInput
           style={styles.input}
-          placeholder="Enter location/address"
+          placeholder={t('enterLocation')}
           value={location}
           onChangeText={setLocation}
         />
         <TouchableOpacity style={styles.locationButton} onPress={useCurrentLocation}>
-          <Text style={styles.locationButtonText}>Use My Current Location</Text>
+          <Text style={styles.locationButtonText}>{t('useCurrentLocation')}</Text>
         </TouchableOpacity>
 
-        <Text style={styles.label}>Photo *</Text>
+        <Text style={styles.label}>{t('photo')} *</Text>
         <View style={styles.photoButtonsContainer}>
           <TouchableOpacity style={styles.photoButton} onPress={takePhoto}>
-            <Text style={styles.photoButtonText}>Take Photo</Text>
+            <Text style={styles.photoButtonText}>{t('takePhoto')}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.photoButton} onPress={pickImage}>
-            <Text style={styles.photoButtonText}>Choose from Gallery</Text>
+            <Text style={styles.photoButtonText}>{t('chooseFromGallery')}</Text>
           </TouchableOpacity>
         </View>
 
         {photo && (
-          <Image
-            source={{ uri: photo.uri }}
-            style={styles.photoPreview}
-            resizeMode="cover"
-          />
+          <Image source={{ uri: photo.uri }} style={styles.photoPreview} resizeMode="cover" />
         )}
 
         <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-          <Text style={styles.submitButtonText}>Submit Report</Text>
+          <Text style={styles.submitButtonText}>{t('submitReport')}</Text>
         </TouchableOpacity>
       </ScrollView>
     </KeyboardAvoidingView>

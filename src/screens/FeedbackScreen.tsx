@@ -1,33 +1,52 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+  ScrollView,
+} from 'react-native';
+
+import { useNavigation } from '@react-navigation/native';
+import { useLayoutEffect } from 'react';
 
 const FeedbackScreen: React.FC = () => {
+  const { t } = useTranslation();
   const [feedback, setFeedback] = useState('');
+
+  const navigation = useNavigation();
+
+  useLayoutEffect(() => {
+    navigation.setOptions({ title: t('Feedback') });
+  }, [navigation, t]);
 
   const handleSubmit = () => {
     if (feedback.trim().length < 10) {
-      Alert.alert('Validation', 'Feedback must be at least 10 characters long.');
+      Alert.alert(t('validationTitle'), t('feedbackTooShort'));
       return;
     }
 
-    Alert.alert('Feedback Sent', 'Thank you for your valuable feedback!');
+    Alert.alert(t('feedbackSentTitle'), t('thankYouFeedback'));
     setFeedback('');
   };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.heading}>We value your feedback</Text>
-      <Text style={styles.label}>Let us know how we can improve:</Text>
+      <Text style={styles.heading}>{t('feedbackHeading')}</Text>
+      <Text style={styles.label}>{t('feedbackLabel')}</Text>
       <TextInput
         style={styles.input}
-        placeholder="Type your feedback here..."
+        placeholder={t('feedbackPlaceholder')}
         multiline
         numberOfLines={5}
         value={feedback}
         onChangeText={setFeedback}
       />
       <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-        <Text style={styles.buttonText}>Submit Feedback</Text>
+        <Text style={styles.buttonText}>{t('submitFeedback')}</Text>
       </TouchableOpacity>
     </ScrollView>
   );

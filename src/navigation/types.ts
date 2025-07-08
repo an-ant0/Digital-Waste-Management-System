@@ -43,7 +43,7 @@ export type RootStackParamList = {
   Profile: undefined;
   Feedback: undefined;
   Rewards: undefined;
-  History: undefined;
+  ReportHistory: undefined;
   Support: undefined;
   RewardHistory: undefined;
   ReportWaste: undefined;
@@ -51,3 +51,4 @@ export type RootStackParamList = {
   Badges: undefined;
   Leaderboard: undefined;
 };
+
