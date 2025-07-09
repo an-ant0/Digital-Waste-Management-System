@@ -26,7 +26,7 @@ const SignupScreen4: React.FC<Props> = ({ navigation, route }) => {
 
     // Simulate success
     Alert.alert(t('signupSuccessTitle'), t('signupSuccessMessage'));
-    navigation.navigate('Login');
+    navigation.navigate('UserLogin');
   };
 
   return (

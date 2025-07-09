@@ -21,7 +21,7 @@ const LanguageSelection: React.FC = () => {
       await AsyncStorage.setItem('appLanguage', language);
       i18n.changeLanguage(language === 'np' ? 'ne' : 'en'); 
       console.log('Language saved:', language);
-      navigation.navigate('Login');
+      navigation.navigate('Selection'); // Navigate to the next screen after selection
     } catch (error) {
       console.error('Error saving language:', error);
       Alert.alert('Error', 'Failed to save language preference');

@@ -11,24 +11,26 @@ import { RootStackParamList } from './src/navigation/types';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
-import SplashScreen from './src/screens/SplashScreen';
-import LanguageSelection from './src/screens/LanguageSelection';
-import LoginScreen from './src/screens/Auth/LoginScreen';
-import SignupScreen1 from './src/screens/Auth/SignupScreen1';
-import SignupScreen2 from './src/screens/Auth/SignupScreen2';
-import SignupScreen3 from './src/screens/Auth/SignupScreen3';
-import SignupScreen4 from './src/screens/Auth/SignupScreen4';
-import HomeScreen from './src/screens/HomeScreen';
-import ReportWaste from './src/screens/ReportWasteScreen';
-import CustomPickupScreen from './src/screens/CustomPickupScreen';
-import RewardsScreen from './src/screens/RewardsScreen';
-import HistoryScreen from './src/screens/ReportHistoryScreen';
-import SupportScreen from './src/screens/SupportScreen';
-import FeedbackScreen from './src/screens/FeedbackScreen';
-import ProfileScreen from './src/screens/ProfileScreen';
-import RewardHistoryScreen from './src/screens/RewardHistoryScreen';
-import BadgesScreen from './src/screens/BadgesScreen';
-import LeaderboardScreen from './src/screens/LeaderboardScreen';
+import SplashScreen from './src/userscreens/SplashScreen';
+import LanguageSelection from './src/userscreens/LanguageSelection';
+import SelectionScreen from './src/common/SelectionScreen';
+import AdminLogin from './src/adminscreens/LoginScreen';
+import UserLogin from './src/userscreens/Auth/LoginScreen';
+import SignupScreen1 from './src/userscreens/Auth/SignupScreen1';
+import SignupScreen2 from './src/userscreens/Auth/SignupScreen2';
+import SignupScreen3 from './src/userscreens/Auth/SignupScreen3';
+import SignupScreen4 from './src/userscreens/Auth/SignupScreen4';
+import HomeScreen from './src/userscreens/HomeScreen';
+import ReportWaste from './src/userscreens/ReportWasteScreen';
+import CustomPickupScreen from './src/userscreens/CustomPickupScreen';
+import RewardsScreen from './src/userscreens/RewardsScreen';
+import HistoryScreen from './src/userscreens/ReportHistoryScreen';
+import SupportScreen from './src/userscreens/SupportScreen';
+import FeedbackScreen from './src/userscreens/FeedbackScreen';
+import ProfileScreen from './src/userscreens/ProfileScreen';
+import RewardHistoryScreen from './src/userscreens/RewardHistoryScreen';
+import BadgesScreen from './src/userscreens/BadgesScreen';
+import LeaderboardScreen from './src/userscreens/LeaderboardScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Drawer = createDrawerNavigator();
@@ -54,7 +56,9 @@ export default function App() {
           <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen name="Splash" component={SplashScreen} />
             <Stack.Screen name="LanguageSelection" component={LanguageSelection} />
-            <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen name="Selection" component={SelectionScreen} />
+            <Stack.Screen name="AdminLogin" component={AdminLogin} />
+            <Stack.Screen name="UserLogin" component={UserLogin} />
             <Stack.Screen name="Signup1" component={SignupScreen1} />
             <Stack.Screen name="Signup2" component={SignupScreen2} />
             <Stack.Screen name="Signup3" component={SignupScreen3} />

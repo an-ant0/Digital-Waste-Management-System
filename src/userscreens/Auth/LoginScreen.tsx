@@ -11,9 +11,9 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../navigation/types';
 import { useTranslation } from 'react-i18next';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'Login'>;
+type Props = NativeStackScreenProps<RootStackParamList, 'UserLogin'>;
 
-const LoginScreen: React.FC<Props> = ({ navigation }) => {
+const UserLoginScreen: React.FC<Props> = ({ navigation }) => {
   const { t } = useTranslation();
 
   const [phone, setPhone] = useState('');
@@ -68,7 +68,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
   );
 };
 
-export default LoginScreen;
+export default UserLoginScreen;
 
 const styles = StyleSheet.create({
   container: {
