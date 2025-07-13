@@ -7,8 +7,15 @@ import {
   StyleSheet,
   Alert,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../navigation/types';
+
+type AdminLoginScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'AdminLogin'>;
 
 const AdminLoginScreen: React.FC = () => {
+  const navigation = useNavigation<AdminLoginScreenNavigationProp>();
+
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -19,11 +26,10 @@ const AdminLoginScreen: React.FC = () => {
       return;
     }
 
-    // Dummy admin credentials for now
-    if (username === 'admin' && password === 'admin123') {
+    if (username === '1' && password === '1') {
       Alert.alert('Login Success', 'Welcome, Admin!');
       setError('');
-      // Navigate to Admin Dashboard here
+      navigation.navigate('Home', { role: 'admin' }); // ✅ Typed correctly now
     } else {
       setError('Invalid credentials. Please try again.');
     }

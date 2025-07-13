@@ -27,10 +27,7 @@ const UserLoginScreen: React.FC<Props> = ({ navigation }) => {
 
     if (phone === '1' && password === '1') {
       Alert.alert(t('success'), t('loggedIn'));
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'Home' }],
-      });
+        navigation.navigate('Home', { role: 'user' });
     } else {
       Alert.alert(t('loginFailed'), t('invalidCredentials'));
     }

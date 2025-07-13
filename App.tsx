@@ -1,15 +1,16 @@
 import React from 'react';
 import 'react-native-reanimated';
+import 'react-native-gesture-handler';
 import { I18nextProvider } from 'react-i18next';
 import i18n from './src/i18n';
 import { useTranslation } from 'react-i18next';
 
-import 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { RootStackParamList } from './src/navigation/types';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+
+import { RootStackParamList } from './src/navigation/types';
 
 import SplashScreen from './src/userscreens/SplashScreen';
 import LanguageSelection from './src/userscreens/LanguageSelection';
@@ -21,6 +22,8 @@ import SignupScreen2 from './src/userscreens/Auth/SignupScreen2';
 import SignupScreen3 from './src/userscreens/Auth/SignupScreen3';
 import SignupScreen4 from './src/userscreens/Auth/SignupScreen4';
 import HomeScreen from './src/userscreens/HomeScreen';
+import AdminDashboard from './src/adminscreens/AdminDashboard';
+import ManageUsersScreen from './src/adminscreens/ManageUsersScreen';
 import ReportWaste from './src/userscreens/ReportWasteScreen';
 import CustomPickupScreen from './src/userscreens/CustomPickupScreen';
 import RewardsScreen from './src/userscreens/RewardsScreen';
@@ -35,18 +38,41 @@ import LeaderboardScreen from './src/userscreens/LeaderboardScreen';
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Drawer = createDrawerNavigator();
 
-function DrawerRoutes() {
+function DrawerRoutes({ role }: { role: 'admin' | 'user' }) {
   const { t } = useTranslation();
+
+  if (role === 'admin') {
+    return (
+      <Drawer.Navigator initialRouteName="AdminDashboard">
+        <Drawer.Screen
+          name="Admin Dashboard"
+          component={AdminDashboard}
+          options={{ drawerLabel: t('Dashboard') }}
+        />
+        <Drawer.Screen
+          name="Manage Users"
+          component={ManageUsersScreen}
+          options={{ drawerLabel: t('Manage Users') }}
+        />
+      </Drawer.Navigator>
+    );
+  }
+
   return (
     <Drawer.Navigator initialRouteName="Home">
       <Drawer.Screen name="Home" component={HomeScreen} options={{ drawerLabel: t('home') }} />
-      <Drawer.Screen name="Report Waste" component={ReportWaste} options={{ drawerLabel: t('reportWaste') }} />
-      <Drawer.Screen name="Custom Pickup" component={CustomPickupScreen} options={{ drawerLabel: t('customPickup') }} />
+      <Drawer.Screen name="ReportWaste" component={ReportWaste} options={{ drawerLabel: t('reportWaste') }} />
+      <Drawer.Screen name="CustomPickup" component={CustomPickupScreen} options={{ drawerLabel: t('customPickup') }} />
       <Drawer.Screen name="Rewards" component={RewardsScreen} options={{ drawerLabel: t('rewards') }} />
       <Drawer.Screen name="Support" component={SupportScreen} options={{ drawerLabel: t('support') }} />
     </Drawer.Navigator>
   );
 }
+
+const DrawerRoutesWrapper = ({ route }: any) => {
+  const role = route?.params?.role || 'user';
+  return <DrawerRoutes role={role} />;
+};
 
 export default function App() {
   return (
@@ -63,7 +89,7 @@ export default function App() {
             <Stack.Screen name="Signup2" component={SignupScreen2} />
             <Stack.Screen name="Signup3" component={SignupScreen3} />
             <Stack.Screen name="Signup4" component={SignupScreen4} />
-            <Stack.Screen name="Home" component={DrawerRoutes} />
+            <Stack.Screen name="Home" component={DrawerRoutesWrapper} />
             <Stack.Screen name="Profile" component={ProfileScreen} options={{ headerShown: true }} />
             <Stack.Screen name="RewardHistory" component={RewardHistoryScreen} options={{ headerShown: true }} />
             <Stack.Screen name="ReportWaste" component={ReportWaste} />
@@ -71,7 +97,7 @@ export default function App() {
             <Stack.Screen name="CustomPickup" component={CustomPickupScreen} />
             <Stack.Screen name="Badges" component={BadgesScreen} />
             <Stack.Screen name="Leaderboard" component={LeaderboardScreen} />
-            <Stack.Screen name="Feedback" component={FeedbackScreen} options={{ headerShown: true }}/>
+            <Stack.Screen name="Feedback" component={FeedbackScreen} options={{ headerShown: true }} />
           </Stack.Navigator>
         </NavigationContainer>
       </I18nextProvider>

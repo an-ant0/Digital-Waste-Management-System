@@ -41,8 +41,10 @@ export type RootStackParamList = {
     otp: string;
     password: string;
   };
-  Home: undefined;
+  Home: { role: 'user' | 'admin' };
+  AdminDashboard: undefined;
   Profile: undefined;
+  ManageUsers: undefined;
   Feedback: undefined;
   Rewards: undefined;
   ReportHistory: undefined;
