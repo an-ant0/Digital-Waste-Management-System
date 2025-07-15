@@ -44,15 +44,20 @@ export type RootStackParamList = {
   Home: { role: 'user' | 'admin' };
   AdminDashboard: undefined;
   Profile: undefined;
+  AdminProfile: undefined;
   ManageUsers: undefined;
   Feedback: undefined;
   Rewards: undefined;
   ReportHistory: undefined;
   Support: undefined;
   RewardHistory: undefined;
+  PointsRedemption: undefined;
   ReportWaste: undefined;
+  AdminWasteReview: undefined;
+  AdminWasteHistory: undefined;
   CustomPickup: undefined;
+  TruckManagement: undefined;
+  TruckLocation: undefined;
   Badges: undefined;
   Leaderboard: undefined;
 };
-

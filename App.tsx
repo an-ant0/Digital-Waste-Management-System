@@ -25,12 +25,18 @@ import HomeScreen from './src/userscreens/HomeScreen';
 import AdminDashboard from './src/adminscreens/AdminDashboard';
 import ManageUsersScreen from './src/adminscreens/ManageUsersScreen';
 import ReportWaste from './src/userscreens/ReportWasteScreen';
+import AdminWasteReviewScreen from './src/adminscreens/AdminWasteReviewScreen';
+import AdminWasteHistoryScreen from './src/adminscreens/AdminWasteHistoryScreen';
 import CustomPickupScreen from './src/userscreens/CustomPickupScreen';
+import TruckManagementScreen from './src/adminscreens/TruckManagementScreen';
+import TruckLocationScreen from './src/adminscreens/TruckLocationScreen';
 import RewardsScreen from './src/userscreens/RewardsScreen';
+import PointsRedemptionScren from './src/adminscreens/PointsRedemptionScreen';
 import HistoryScreen from './src/userscreens/ReportHistoryScreen';
 import SupportScreen from './src/userscreens/SupportScreen';
 import FeedbackScreen from './src/userscreens/FeedbackScreen';
 import ProfileScreen from './src/userscreens/ProfileScreen';
+import AdminProfileScreen from './src/adminscreens/AdminProfileScreen';
 import RewardHistoryScreen from './src/userscreens/RewardHistoryScreen';
 import BadgesScreen from './src/userscreens/BadgesScreen';
 import LeaderboardScreen from './src/userscreens/LeaderboardScreen';
@@ -45,14 +51,34 @@ function DrawerRoutes({ role }: { role: 'admin' | 'user' }) {
     return (
       <Drawer.Navigator initialRouteName="AdminDashboard">
         <Drawer.Screen
-          name="Admin Dashboard"
+          name="AdminDashboard"
           component={AdminDashboard}
           options={{ drawerLabel: t('Dashboard') }}
         />
         <Drawer.Screen
-          name="Manage Users"
+          name="ManageUsers"
           component={ManageUsersScreen}
           options={{ drawerLabel: t('Manage Users') }}
+        />
+        <Drawer.Screen
+          name="AdminWasteReview"
+          component={AdminWasteReviewScreen}
+          options={{ drawerLabel: t('Waste Review') }}
+        />
+        <Drawer.Screen
+          name="TruckManagement"
+          component={TruckManagementScreen}
+          options={{ drawerLabel: t('Truck Management') }}
+        />
+        <Drawer.Screen
+          name="TruckLocation"
+          component={TruckLocationScreen}
+          options={{ drawerLabel: t('Truck Location') }}
+        />
+        <Drawer.Screen
+          name="PointsRedemption"
+          component={PointsRedemptionScren}
+          options={{ drawerLabel: t('Points Redemption') }}
         />
       </Drawer.Navigator>
     );
@@ -91,10 +117,16 @@ export default function App() {
             <Stack.Screen name="Signup4" component={SignupScreen4} />
             <Stack.Screen name="Home" component={DrawerRoutesWrapper} />
             <Stack.Screen name="Profile" component={ProfileScreen} options={{ headerShown: true }} />
+            <Stack.Screen name="AdminProfile" component={AdminProfileScreen} options={{ headerShown: true }} />
             <Stack.Screen name="RewardHistory" component={RewardHistoryScreen} options={{ headerShown: true }} />
+            <Stack.Screen name="PointsRedemption" component={PointsRedemptionScren} options={{ headerShown: true }} />
             <Stack.Screen name="ReportWaste" component={ReportWaste} />
+            <Stack.Screen name="AdminWasteReview" component={AdminWasteReviewScreen} options={{ headerShown: true }} />
+            <Stack.Screen name="AdminWasteHistory" component={AdminWasteHistoryScreen} options={{ headerShown: true }} />
             <Stack.Screen name="ReportHistory" component={HistoryScreen} options={{ headerShown: true }} />
             <Stack.Screen name="CustomPickup" component={CustomPickupScreen} />
+            <Stack.Screen name="TruckManagement" component={TruckManagementScreen} />
+            <Stack.Screen name="TruckLocation" component={TruckLocationScreen} />
             <Stack.Screen name="Badges" component={BadgesScreen} />
             <Stack.Screen name="Leaderboard" component={LeaderboardScreen} />
             <Stack.Screen name="Feedback" component={FeedbackScreen} options={{ headerShown: true }} />

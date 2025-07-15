@@ -1,25 +1,53 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, FlatList } from 'react-native';
+import React, { useLayoutEffect } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  FlatList,
+  TouchableOpacity,
+  Dimensions,
+} from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import { LineChart } from 'react-native-chart-kit';
-import { Dimensions } from 'react-native';
+import { useNavigation, NavigationProp } from '@react-navigation/native';
+import { RootStackParamList } from '../navigation/types';
 
 const screenWidth = Dimensions.get('window').width;
 
-const AdminDashboard: React.FC = () => {
-  const weeklyData = {
-    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-    datasets: [
-      {
-        data: [12, 19, 10, 15, 8, 18, 20],
-      },
-    ],
-  };
+const weeklyData = {
+  labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+  datasets: [
+    {
+      data: [12, 19, 10, 15, 8, 18, 20],
+    },
+  ],
+};
 
-  const recentReports = [
-    { id: '1', title: 'Ward 3 - Garbage near park', date: '2025-07-06' },
-    { id: '2', title: 'Ward 4 - Overflowing bin', date: '2025-07-05' },
-    { id: '3', title: 'Ward 1 - Illegal dumping', date: '2025-07-04' },
-  ];
+const recentReports = [
+  { id: '1', title: 'Ward 3 - Garbage near park', date: '2025-07-06' },
+  { id: '2', title: 'Ward 4 - Overflowing bin', date: '2025-07-05' },
+  { id: '3', title: 'Ward 1 - Illegal dumping', date: '2025-07-04' },
+];
+
+const AdminDashboard: React.FC = () => {
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+
+
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity
+          onPress={() => navigation.navigate('AdminProfile')}
+          style={{ marginRight: 16 }}
+        >
+          <Icon name="account-circle" size={26} color="#1E90FF" />
+        </TouchableOpacity>
+      ),
+      title: 'Admin Dashboard',
+    });
+  }, [navigation]);
 
   return (
     <ScrollView style={styles.container}>
