@@ -28,6 +28,7 @@ import ReportWaste from './src/userscreens/ReportWasteScreen';
 import AdminWasteReviewScreen from './src/adminscreens/AdminWasteReviewScreen';
 import AdminWasteHistoryScreen from './src/adminscreens/AdminWasteHistoryScreen';
 import CustomPickupScreen from './src/userscreens/CustomPickupScreen';
+import AdminCustomPickupScreen from './src/adminscreens/AdminCustomPickupScreen';
 import TruckManagementScreen from './src/adminscreens/TruckManagementScreen';
 import TruckLocationScreen from './src/adminscreens/TruckLocationScreen';
 import RewardsScreen from './src/userscreens/RewardsScreen';
@@ -80,6 +81,11 @@ function DrawerRoutes({ role }: { role: 'admin' | 'user' }) {
           component={PointsRedemptionScren}
           options={{ drawerLabel: t('Points Redemption') }}
         />
+        <Drawer.Screen
+          name="AdminCustomPickup"
+          component={AdminCustomPickupScreen}
+          options={{ drawerLabel: t('Custom Pickup Requests') }}
+        />
       </Drawer.Navigator>
     );
   }
@@ -125,6 +131,7 @@ export default function App() {
             <Stack.Screen name="AdminWasteHistory" component={AdminWasteHistoryScreen} options={{ headerShown: true }} />
             <Stack.Screen name="ReportHistory" component={HistoryScreen} options={{ headerShown: true }} />
             <Stack.Screen name="CustomPickup" component={CustomPickupScreen} />
+            <Stack.Screen name="AdminCustomPickup" component={AdminCustomPickupScreen} options={{ headerShown: true }} />
             <Stack.Screen name="TruckManagement" component={TruckManagementScreen} />
             <Stack.Screen name="TruckLocation" component={TruckLocationScreen} />
             <Stack.Screen name="Badges" component={BadgesScreen} />

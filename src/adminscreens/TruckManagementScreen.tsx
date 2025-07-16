@@ -26,6 +26,20 @@ const TruckManagementScreen: React.FC = () => {
   const [plateNumber, setPlateNumber] = useState('');
   const [route, setRoute] = useState('');
 
+  const dispatchTruckToWard = async (wardNumber: string) => {
+    try {
+      await fetch('https://your-server.com/api/dispatch-truck', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ wardNumber }),
+      });
+      Alert.alert('Success', `Truck dispatched to Ward ${wardNumber}`);
+    } catch (err) {
+      Alert.alert('Error', 'Failed to dispatch truck');
+    }
+  };
+
+
   useEffect(() => {
     // Dummy data – replace with real API call
     const dummy: Truck[] = [
