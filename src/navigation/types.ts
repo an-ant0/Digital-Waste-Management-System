@@ -56,6 +56,7 @@ export type RootStackParamList = {
   AdminWasteReview: undefined;
   AdminWasteHistory: undefined;
   CustomPickup: undefined;
+  AdminCustomPickup: undefined;
   TruckManagement: undefined;
   TruckLocation: undefined;
   Badges: undefined;
