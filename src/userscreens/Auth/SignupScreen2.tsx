@@ -1,5 +1,5 @@
+// frontend/SignupScreen2.tsx
 import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import {
   View,
   Text,
@@ -13,76 +13,91 @@ import {
 import { launchImageLibrary } from 'react-native-image-picker';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Picker } from '@react-native-picker/picker';
-import { RootStackParamList } from '../../navigation/types';
+import { RootStackParamList } from '../../navigation/types'; // Assuming this path is correct
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Signup2'>;
 
 const SignupScreen2: React.FC<Props> = ({ navigation, route }) => {
-  const { t } = useTranslation();
+  // State to store base64 strings for images
   const [profilePic, setProfilePic] = useState<string | null>(null);
   const [idType, setIdType] = useState<string>('');
   const [idNumber, setIdNumber] = useState('');
   const [idPhoto, setIdPhoto] = useState<string | null>(null);
 
-  const handleSelectImage = async (setter: (uri: string | null) => void) => {
-    const result = await launchImageLibrary({ mediaType: 'photo' });
+  // Function to handle image selection and convert to base64
+  const handleSelectImage = async (setter: (data: string | null) => void) => {
+    const result = await launchImageLibrary({
+      mediaType: 'photo',
+      includeBase64: true, // Request base64 data directly
+      quality: 0.5, // Reduce quality to keep base64 string size manageable
+    });
+
     if (result.assets && result.assets.length > 0) {
-      setter(result.assets[0].uri || null);
+      const asset = result.assets[0];
+      if (asset.base64) {
+        // Prepend data URI scheme
+        setter(`data:${asset.type};base64,${asset.base64}`);
+      } else {
+        Alert.alert('Error', 'Failed to get base64 data for image.');
+        setter(null);
+      }
     }
   };
 
   const handleNext = () => {
     if (!profilePic || !idType || !idNumber || !idPhoto) {
-      Alert.alert(t('missingInfoTitle'), t('missingInfoMessage'));
+      Alert.alert('Missing Information', 'Please fill in all required fields.');
       return;
     }
 
+    // Navigate to Signup3, passing all collected data including base64 image strings
     navigation.navigate('Signup3', {
-      ...route.params,
-      profilePic,
+      ...route.params, // Data from Signup1
+      profilePic, // Base64 string
       idType,
       idNumber,
-      idPhoto,
+      idPhoto, // Base64 string
     });
   };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.heading}>{t('signupStep2')}</Text>
+      <Text style={styles.heading}>Signup - Step 2</Text>
 
       {/* Profile Picture Section */}
       <View style={styles.sectionBox}>
-        <Text style={styles.sectionTitle}>{t('profilePicture')}</Text>
+        <Text style={styles.sectionTitle}>Upload Profile Picture</Text>
         {profilePic ? (
+          // Display the base64 image (React Native Image component can handle data URIs)
           <Image source={{ uri: profilePic }} style={styles.imagePreview} />
         ) : (
           <TouchableOpacity
             style={styles.imageButton}
             onPress={() => handleSelectImage(setProfilePic)}
           >
-            <Text style={styles.imageButtonText}>{t('chooseProfile')}</Text>
+            <Text style={styles.imageButtonText}>Choose Profile Picture</Text>
           </TouchableOpacity>
         )}
       </View>
 
       {/* Identity Section */}
       <View style={styles.sectionBox}>
-        <Text style={styles.sectionTitle}>{t('identityInfo')}</Text>
+        <Text style={styles.sectionTitle}>Identity Information</Text>
 
         {/* ID Type Dropdown */}
         <View style={styles.dropdownContainer}>
-          <Text style={styles.dropdownLabel}>{t('idType')}</Text>
+          <Text style={styles.dropdownLabel}>Type of Identification</Text>
           <View style={styles.pickerWrapper}>
             <Picker
               selectedValue={idType}
-              onValueChange={(itemValue: string) => setIdType(itemValue)}
+              onValueChange={(itemValue) => setIdType(itemValue)}
               mode="dropdown"
               style={styles.picker}
             >
-              <Picker.Item label={t('selectIdType')} value="" />
-              <Picker.Item label={t('citizenship')} value="Citizenship" />
-              <Picker.Item label={t('passport')} value="Passport" />
-              <Picker.Item label={t('voterId')} value="VoterID" />
+              <Picker.Item label="Select ID Type..." value="" />
+              <Picker.Item label="Citizenship" value="Citizenship" />
+              <Picker.Item label="Passport" value="Passport" />
+              <Picker.Item label="Voter ID" value="VoterID" />
             </Picker>
           </View>
         </View>
@@ -95,21 +110,21 @@ const SignupScreen2: React.FC<Props> = ({ navigation, route }) => {
             style={styles.imageButton}
             onPress={() => handleSelectImage(setIdPhoto)}
           >
-            <Text style={styles.imageButtonText}>{t('uploadId')}</Text>
+            <Text style={styles.imageButtonText}>Upload ID Photo</Text>
           </TouchableOpacity>
         )}
 
         {/* ID Number */}
         <TextInput
           style={styles.input}
-          placeholder={t('idNumber')}
+          placeholder="Identification Number"
           value={idNumber}
           onChangeText={setIdNumber}
         />
       </View>
 
       <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
-        <Text style={styles.nextButtonText}>{t('next')}</Text>
+        <Text style={styles.nextButtonText}>Next</Text>
       </TouchableOpacity>
     </ScrollView>
   );

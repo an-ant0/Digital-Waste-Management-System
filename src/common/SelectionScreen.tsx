@@ -15,7 +15,7 @@ const SelectionScreen = () => {
       <Text style={styles.title}>Select Login Type</Text>
 
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('UserLogin')}>
-        <Text style={styles.buttonText}>User</Text>
+        <Text style={styles.buttonText}>  User  </Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('AdminLogin')}>
@@ -42,15 +42,15 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   button: {
-    backgroundColor: '#007bff',
+    backgroundColor: '#aca162ff',
     paddingVertical: 12,
-    paddingHorizontal: 25,
+    paddingHorizontal: 80,
     borderRadius: 8,
     marginBottom: 15,
   },
   buttonText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '600',
   },
 });

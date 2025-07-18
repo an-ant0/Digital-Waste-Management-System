@@ -8,13 +8,13 @@ import i18n from '../i18n';
 type RootStackParamList = {
   Splash: undefined;
   LanguageSelection: undefined;
-  Login: undefined;
+  Selection: undefined;
 };
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'LanguageSelection'>;
 
 const LanguageSelection: React.FC = () => {
-  const navigation = useNavigation<NavigationProp>();
+  const navigation = useNavigation<NavigationProp>();  
 
   const handleLanguageSelect = async (language: 'en' | 'np') => {
     try {
@@ -33,14 +33,14 @@ const LanguageSelection: React.FC = () => {
       <Text style={styles.title}>Please select your language</Text>
 
       <TouchableOpacity
-        style={[styles.button, { backgroundColor: '#005BBB' }]}
+        style={[styles.button, { backgroundColor: '#6799ceff' }]}
         onPress={() => handleLanguageSelect('en')}
       >
         <Text style={styles.buttonText}>🇺🇸 English</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
-        style={[styles.button, { backgroundColor: '#DC3545' }]}
+        style={[styles.button, { backgroundColor: '#cf6670ff' }]}
         onPress={() => handleLanguageSelect('np')}
       >
         <Text style={styles.buttonText}>🇳🇵 नेपाली</Text>

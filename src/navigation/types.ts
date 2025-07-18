@@ -1,10 +1,13 @@
+// frontend/navigation/types.ts
 export type RootStackParamList = {
   Splash: undefined;
   LanguageSelection: undefined;
   Selection: undefined;
-  UserLogin: undefined;
+  UserLogin: undefined; // Changed from 'Login' to 'UserLogin' to match your previous definition
   AdminLogin: undefined;
+
   Signup1: undefined;
+
   Signup2: {
     firstName: string;
     middleName: string;
@@ -13,6 +16,7 @@ export type RootStackParamList = {
     wardNumber: string;
     localityName: string;
   };
+
   Signup3: {
     firstName: string;
     middleName: string;
@@ -20,11 +24,12 @@ export type RootStackParamList = {
     homeNumber: string;
     wardNumber: string;
     localityName: string;
-    profilePic: string;
+    profilePic: string | null; // Changed to allow null
     idType: string;
     idNumber: string;
-    idPhoto: string;
+    idPhoto: string | null; // Changed to allow null
   };
+
   Signup4: {
     firstName: string;
     middleName: string;
@@ -32,18 +37,18 @@ export type RootStackParamList = {
     homeNumber: string;
     wardNumber: string;
     localityName: string;
-    profilePic: string;
+    profilePic: string | null; // Changed to allow null
     idType: string;
     idNumber: string;
-    idPhoto: string;
+    idPhoto: string | null; // Changed to allow null
     phone: string;
     email: string;
     otp: string;
     password: string;
   };
-  Home: { role: 'user' | 'admin' };
+  Home: { userId: string; role: 'user' | 'admin' }; // Corrected: Home expects userId and role
   AdminDashboard: undefined;
-  Profile: undefined;
+  Profile: { userId: string }; // Corrected: Profile expects userId
   AdminProfile: undefined;
   ManageUsers: undefined;
   Feedback: undefined;
