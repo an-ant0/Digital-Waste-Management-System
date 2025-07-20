@@ -1,15 +1,11 @@
-import React, { useState, useLayoutEffect } from 'react';
-import { useTranslation } from 'react-i18next';
-import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  TextInput,
-  TouchableOpacity,
-} from 'react-native';
+import React, { useState, useLayoutEffect, useMemo } from 'react';
+import { View, Text, StyleSheet, FlatList, TextInput, TouchableOpacity } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
 import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
+
+import { RootStackParamList } from '../navigation/types';
 
 type HistoryItem = {
   id: string;
@@ -26,48 +22,7 @@ type HistoryItem = {
 };
 
 const historyData: HistoryItem[] = [
-  {
-    id: '1',
-    type: 'reported',
-    title: 'Reported Waste',
-    date: '2025-06-28',
-    description: 'Reported from Ward 3.',
-  },
-  {
-    id: '2',
-    type: 'approved',
-    title: 'Approved Waste',
-    date: '2025-06-26',
-    description: 'Verified by municipality.',
-  },
-  {
-    id: '3',
-    type: 'pending',
-    title: 'Pending Report',
-    date: '2025-06-25',
-    description: 'Waiting for review.',
-  },
-  {
-    id: '4',
-    type: 'canceled',
-    title: 'Canceled Report',
-    date: '2025-06-24',
-    description: 'Issue was invalid.',
-  },
-  {
-    id: '5',
-    type: 'reward_collected',
-    title: 'Points Collected',
-    date: '2025-06-23',
-    description: 'Earned 50 points.',
-  },
-  {
-    id: '6',
-    type: 'reward_redeemed',
-    title: 'Points Redeemed',
-    date: '2025-06-22',
-    description: 'Used 100 points.',
-  },
+  // ... your data here ...
 ];
 
 const formatDate = (date: string) => {
@@ -81,7 +36,7 @@ const formatDate = (date: string) => {
 
 const HistoryScreen: React.FC = () => {
   const { t } = useTranslation();
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'History'>>();
   const [selectedFilter, setSelectedFilter] = useState('all');
   const [searchText, setSearchText] = useState('');
 
@@ -99,15 +54,17 @@ const HistoryScreen: React.FC = () => {
     { label: t('redeemed'), value: 'reward_redeemed' },
   ];
 
-  const filteredData = historyData.filter(item => {
-    const matchType = selectedFilter === 'all' || item.type === selectedFilter;
-    const title = t(item.title).toLowerCase();
-    const desc = t(item.description).toLowerCase();
-    const matchSearch =
-      title.includes(searchText.toLowerCase()) ||
-      desc.includes(searchText.toLowerCase());
-    return matchType && matchSearch;
-  });
+  const filteredData = useMemo(() => {
+    return historyData.filter(item => {
+      const matchType = selectedFilter === 'all' || item.type === selectedFilter;
+      const title = t(item.title).toLowerCase();
+      const desc = t(item.description).toLowerCase();
+      const matchSearch =
+        title.includes(searchText.toLowerCase()) ||
+        desc.includes(searchText.toLowerCase());
+      return matchType && matchSearch;
+    });
+  }, [selectedFilter, searchText, t]);
 
   const handleClearFilter = () => {
     setSelectedFilter('all');
@@ -129,12 +86,13 @@ const HistoryScreen: React.FC = () => {
         value={searchText}
         onChangeText={setSearchText}
         style={styles.searchInput}
+        accessibilityLabel={t('searchHistory')}
       />
 
       <View style={styles.filterRow}>
         <View style={styles.pickerContainer}>
           <RNPickerSelect
-            placeholder={{}}
+            placeholder={{ label: t('selectFilter'), value: null }}
             items={filterOptions}
             onValueChange={(value: string) => setSelectedFilter(value)}
             value={selectedFilter}
@@ -145,7 +103,11 @@ const HistoryScreen: React.FC = () => {
             useNativeAndroidPickerStyle={false}
           />
         </View>
-        <TouchableOpacity style={styles.clearButton} onPress={handleClearFilter}>
+        <TouchableOpacity
+          style={styles.clearButton}
+          onPress={handleClearFilter}
+          accessibilityLabel={t('clear')}
+        >
           <Text style={styles.clearButtonText}>{t('clear')}</Text>
         </TouchableOpacity>
       </View>
@@ -155,6 +117,7 @@ const HistoryScreen: React.FC = () => {
         renderItem={renderItem}
         keyExtractor={item => item.id}
         contentContainerStyle={styles.listContent}
+        keyboardShouldPersistTaps="handled"
       />
     </View>
   );

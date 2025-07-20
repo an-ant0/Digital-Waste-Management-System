@@ -3,47 +3,46 @@ import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import i18n from '../i18n';
+import i18n from '../i18n'; // Adjust path as needed
+import { useTranslation } from 'react-i18next';
 
 type RootStackParamList = {
-  Splash: undefined;
   LanguageSelection: undefined;
-  Selection: undefined;
+  NextScreen: undefined;
 };
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'LanguageSelection'>;
 
 const LanguageSelection: React.FC = () => {
-  const navigation = useNavigation<NavigationProp>();  
+  const navigation = useNavigation<NavigationProp>();
+  const { t } = useTranslation();
 
-  const handleLanguageSelect = async (language: 'en' | 'np') => {
+  const handleLanguageSelect = async (language: 'en' | 'ne') => {
     try {
       await AsyncStorage.setItem('appLanguage', language);
-      i18n.changeLanguage(language === 'np' ? 'ne' : 'en'); 
-      console.log('Language saved:', language);
-      navigation.navigate('Selection'); // Navigate to the next screen after selection
+      await i18n.changeLanguage(language);
+      navigation.navigate('NextScreen');
     } catch (error) {
-      console.error('Error saving language:', error);
       Alert.alert('Error', 'Failed to save language preference');
     }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Please select your language</Text>
+      <Text style={styles.title}>{t('selectLanguage')}</Text>
 
       <TouchableOpacity
-        style={[styles.button, { backgroundColor: '#6799ceff' }]}
+        style={[styles.button, { backgroundColor: '#6799ce' }]}
         onPress={() => handleLanguageSelect('en')}
       >
-        <Text style={styles.buttonText}>🇺🇸 English</Text>
+        <Text style={styles.buttonText}>🇺🇸 {t('english')}</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
-        style={[styles.button, { backgroundColor: '#cf6670ff' }]}
-        onPress={() => handleLanguageSelect('np')}
+        style={[styles.button, { backgroundColor: '#cf6670' }]}
+        onPress={() => handleLanguageSelect('ne')}
       >
-        <Text style={styles.buttonText}>🇳🇵 नेपाली</Text>
+        <Text style={styles.buttonText}>🇳🇵 {t('nepali')}</Text>
       </TouchableOpacity>
     </View>
   );

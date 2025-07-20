@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useLayoutEffect } from 'react';
 import {
   View,
   Text,
@@ -15,7 +15,9 @@ const SupportScreen: React.FC = () => {
   const { t } = useTranslation();
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
-  navigation.setOptions({ title: t('support') });
+  useLayoutEffect(() => {
+    navigation.setOptions({ title: t('support') });
+  }, [navigation, t]);
 
   const handleEmailPress = (email: string) => {
     Linking.openURL(`mailto:${email}`);

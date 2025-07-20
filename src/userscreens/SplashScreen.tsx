@@ -3,11 +3,12 @@ import i18n from '../i18n';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type RootStackParamList = {
   Splash: undefined;
   LanguageSelection: undefined;
-  Login: undefined;
+  Selection: undefined;
 };
 
 type SplashScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Splash'>;
@@ -16,9 +17,17 @@ const SplashScreen: React.FC = () => {
   const navigation = useNavigation<SplashScreenNavigationProp>();
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      navigation.replace('LanguageSelection');
-    }, 2000);
+    const checkLanguageAndNavigate = async () => {
+      const savedLang = await AsyncStorage.getItem('appLanguage');
+      if (savedLang) {
+        await i18n.changeLanguage(savedLang);
+        navigation.replace('Selection');
+      } else {
+        navigation.replace('LanguageSelection');
+      }
+    };
+
+    const timeout = setTimeout(checkLanguageAndNavigate, 2000);
 
     return () => clearTimeout(timeout);
   }, [navigation]);

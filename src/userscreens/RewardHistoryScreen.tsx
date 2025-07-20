@@ -54,10 +54,6 @@ const RewardHistoryScreen: React.FC = () => {
     </View>
   );
 
-  const handleRedeemPress = () => {
-    Alert.alert(t('redeemedPoints'), t('redirecting...')); // Placeholder
-  };
-
   return (
     <View style={styles.container}>
       <FlatList

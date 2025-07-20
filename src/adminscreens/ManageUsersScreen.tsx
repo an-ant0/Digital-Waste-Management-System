@@ -73,6 +73,7 @@ const ManageUsersScreen: React.FC = () => {
                 keyExtractor={item => item.id}
                 renderItem={renderItem}
                 contentContainerStyle={{ paddingBottom: 20 }}
+                keyboardShouldPersistTaps="handled"
             />
         </View>
     );

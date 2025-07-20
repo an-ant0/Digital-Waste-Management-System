@@ -1,17 +1,21 @@
-import React from 'react';
-import 'react-native-reanimated';
+// Must be at the very top
 import 'react-native-gesture-handler';
-import { I18nextProvider } from 'react-i18next';
-import i18n from './src/i18n';
-import { useTranslation } from 'react-i18next';
+import 'react-native-reanimated';
+import React from 'react';
 
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { createDrawerNavigator } from '@react-navigation/drawer';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { NavigationContainer, RouteProp } from '@react-navigation/native';
+import {
+  createNativeStackNavigator,
+  NativeStackNavigationProp,
+} from '@react-navigation/native-stack';
+import { createDrawerNavigator } from '@react-navigation/drawer';
 
+import { I18nextProvider, useTranslation } from 'react-i18next';
+import i18n from './src/i18n';
 import { RootStackParamList } from './src/navigation/types';
 
+// Screen Imports
 import SplashScreen from './src/userscreens/SplashScreen';
 import LanguageSelection from './src/userscreens/LanguageSelection';
 import SelectionScreen from './src/common/SelectionScreen';
@@ -32,7 +36,7 @@ import AdminCustomPickupScreen from './src/adminscreens/AdminCustomPickupScreen'
 import TruckManagementScreen from './src/adminscreens/TruckManagementScreen';
 import TruckLocationScreen from './src/adminscreens/TruckLocationScreen';
 import RewardsScreen from './src/userscreens/RewardsScreen';
-import PointsRedemptionScren from './src/adminscreens/PointsRedemptionScreen';
+import PointsRedemptionScreen from './src/adminscreens/PointsRedemptionScreen';
 import HistoryScreen from './src/userscreens/ReportHistoryScreen';
 import SupportScreen from './src/userscreens/SupportScreen';
 import FeedbackScreen from './src/userscreens/FeedbackScreen';
@@ -45,7 +49,13 @@ import LeaderboardScreen from './src/userscreens/LeaderboardScreen';
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Drawer = createDrawerNavigator();
 
-function DrawerRoutes({ role }: { role: 'admin' | 'user' }) {
+function DrawerRoutes({
+  role,
+  initialParams,
+}: {
+  role: 'admin' | 'user';
+  initialParams?: any;
+}) {
   const { t } = useTranslation();
 
   if (role === 'admin') {
@@ -78,7 +88,7 @@ function DrawerRoutes({ role }: { role: 'admin' | 'user' }) {
         />
         <Drawer.Screen
           name="PointsRedemption"
-          component={PointsRedemptionScren}
+          component={PointsRedemptionScreen}
           options={{ drawerLabel: t('Points Redemption') }}
         />
         <Drawer.Screen
@@ -92,18 +102,49 @@ function DrawerRoutes({ role }: { role: 'admin' | 'user' }) {
 
   return (
     <Drawer.Navigator initialRouteName="Home">
-      <Drawer.Screen name="Home" component={HomeScreen} options={{ drawerLabel: t('home') }} />
-      <Drawer.Screen name="ReportWaste" component={ReportWaste} options={{ drawerLabel: t('reportWaste') }} />
-      <Drawer.Screen name="CustomPickup" component={CustomPickupScreen} options={{ drawerLabel: t('customPickup') }} />
-      <Drawer.Screen name="Rewards" component={RewardsScreen} options={{ drawerLabel: t('rewards') }} />
-      <Drawer.Screen name="Support" component={SupportScreen} options={{ drawerLabel: t('support') }} />
+      <Drawer.Screen
+        name="Home"
+        component={HomeScreen}
+        initialParams={initialParams}
+        options={{ drawerLabel: t('Home') }}
+      />
+      <Drawer.Screen
+        name="ReportWaste"
+        component={ReportWaste}
+        options={{ drawerLabel: t('Report Waste') }}
+      />
+      <Drawer.Screen
+        name="CustomPickup"
+        component={CustomPickupScreen}
+        options={{ drawerLabel: t('Custom Pickup') }}
+      />
+      <Drawer.Screen
+        name="Rewards"
+        component={RewardsScreen}
+        options={{ drawerLabel: t('Rewards') }}
+      />
+      <Drawer.Screen
+        name="Support"
+        component={SupportScreen}
+        options={{ drawerLabel: t('Support') }}
+      />
     </Drawer.Navigator>
   );
 }
 
-const DrawerRoutesWrapper = ({ route }: any) => {
-  const role = route?.params?.role || 'user';
-  return <DrawerRoutes role={role} />;
+type DrawerWrapperProps = {
+  route: RouteProp<RootStackParamList, 'Home'>;
+  navigation: NativeStackNavigationProp<RootStackParamList, 'Home'>;
+};
+
+const DrawerRoutesWrapper: React.FC<DrawerWrapperProps> = ({ route }) => {
+  const { role = 'user', userId = '', userName = '' } = route.params || {};
+  return (
+    <DrawerRoutes
+      role={role}
+      initialParams={{ userId, role, userName }}
+    />
+  );
 };
 
 export default function App() {
@@ -125,7 +166,7 @@ export default function App() {
             <Stack.Screen name="Profile" component={ProfileScreen} options={{ headerShown: true }} />
             <Stack.Screen name="AdminProfile" component={AdminProfileScreen} options={{ headerShown: true }} />
             <Stack.Screen name="RewardHistory" component={RewardHistoryScreen} options={{ headerShown: true }} />
-            <Stack.Screen name="PointsRedemption" component={PointsRedemptionScren} options={{ headerShown: true }} />
+            <Stack.Screen name="PointsRedemption" component={PointsRedemptionScreen} options={{ headerShown: true }} />
             <Stack.Screen name="ReportWaste" component={ReportWaste} />
             <Stack.Screen name="AdminWasteReview" component={AdminWasteReviewScreen} options={{ headerShown: true }} />
             <Stack.Screen name="AdminWasteHistory" component={AdminWasteHistoryScreen} options={{ headerShown: true }} />

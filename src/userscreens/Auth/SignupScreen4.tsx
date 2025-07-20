@@ -1,4 +1,3 @@
-// frontend/SignupScreen4.tsx
 import React, { useState } from 'react';
 import {
   View,
@@ -6,17 +5,17 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Alert, // Keep Alert for simple messages
+  Alert,
 } from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../../navigation/types'; // Assuming this path is correct
+import { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Signup4'>;
 
 const SignupScreen4: React.FC<Props> = ({ navigation, route }) => {
   const [agree, setAgree] = useState(false);
-  const [loading, setLoading] = useState(false); // State for loading indicator
+  const [loading, setLoading] = useState(false);
 
   const handleSignup = async () => {
     if (!agree) {
@@ -24,40 +23,33 @@ const SignupScreen4: React.FC<Props> = ({ navigation, route }) => {
       return;
     }
 
-    setLoading(true); // Start loading
+    setLoading(true);
 
-    // Collect all data passed through route.params
     const allSignupData = route.params;
 
     try {
-      // Replace with your backend API URL
-      const API_URL = 'http://192.168.1.76:5000/api/users/register'; // IMPORTANT: Use your actual backend IP or localhost for emulator
+      const API_URL = 'http://192.168.1.130:5000/api/users/register';
 
       const response = await fetch(API_URL, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(allSignupData), // Send all collected data as JSON
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(allSignupData),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        // If registration is successful (status 2xx)
         Alert.alert('Signup Successful', data.message || 'Account created successfully!');
-        navigation.navigate('UserLogin'); // Navigate to Login screen or appropriate next screen
+        navigation.navigate('UserLogin');
       } else {
-        // If there's an error from the backend
         Alert.alert('Signup Failed', data.message || 'Something went wrong. Please try again.');
         console.error('Backend Error:', data);
       }
     } catch (error) {
-      // Handle network errors or other exceptions
       console.error('Network or other error during signup:', error);
       Alert.alert('Error', 'Could not connect to the server. Please check your internet connection or server status.');
     } finally {
-      setLoading(false); // Stop loading regardless of success or failure
+      setLoading(false);
     }
   };
 
@@ -86,7 +78,7 @@ const SignupScreen4: React.FC<Props> = ({ navigation, route }) => {
 
       <TouchableOpacity
         style={[styles.signupButton, { opacity: agree && !loading ? 1 : 0.6 }]}
-        disabled={!agree || loading} // Disable button when not agreed or loading
+        disabled={!agree || loading}
         onPress={handleSignup}
       >
         <Text style={styles.signupButtonText}>

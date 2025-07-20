@@ -8,6 +8,10 @@ const dummyData = [
 ];
 
 const AdminWasteHistoryScreen: React.FC = () => {
+  const getStatusStyle = (status: string) => {
+    return status === 'Approved' ? styles.approved : styles.rejected;
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>Review History</Text>
@@ -17,7 +21,7 @@ const AdminWasteHistoryScreen: React.FC = () => {
         renderItem={({ item }) => (
           <View style={styles.card}>
             <Text style={styles.text}>Type: {item.type}</Text>
-            <Text style={[styles.text, item.status === 'Approved' ? styles.approved : styles.rejected]}>
+            <Text style={[styles.text, getStatusStyle(item.status)]}>
               Status: {item.status}
             </Text>
           </View>

@@ -12,6 +12,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { LineChart } from 'react-native-chart-kit';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation/types';
+import { useTranslation } from 'react-i18next';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -31,9 +32,8 @@ const recentReports = [
 ];
 
 const AdminDashboard: React.FC = () => {
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-
-
+  const navigation = useNavigation<NavigationProp<RootStackParamList, 'AdminDashboard'>>();
+  const { t } = useTranslation();
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -41,42 +41,43 @@ const AdminDashboard: React.FC = () => {
         <TouchableOpacity
           onPress={() => navigation.navigate('AdminProfile')}
           style={{ marginRight: 16 }}
+          accessibilityLabel={t('adminProfile')}
         >
           <Icon name="account-circle" size={26} color="#1E90FF" />
         </TouchableOpacity>
       ),
-      title: 'Admin Dashboard',
+      title: t('adminDashboard'),
     });
-  }, [navigation]);
+  }, [navigation, t]);
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.heading}>Admin Dashboard</Text>
+      <Text style={styles.heading}>{t('adminDashboard')}</Text>
 
       {/* Stats Row */}
       <View style={styles.statsRow}>
         <View style={styles.statBox}>
-          <Text style={styles.statLabel}>Total Users</Text>
+          <Text style={styles.statLabel}>{t('totalUsers')}</Text>
           <Text style={styles.statValue}>412</Text>
         </View>
         <View style={styles.statBox}>
-          <Text style={styles.statLabel}>Active Reports</Text>
+          <Text style={styles.statLabel}>{t('activeReports')}</Text>
           <Text style={styles.statValue}>36</Text>
         </View>
       </View>
       <View style={styles.statsRow}>
         <View style={styles.statBox}>
-          <Text style={styles.statLabel}>Active Trucks</Text>
+          <Text style={styles.statLabel}>{t('activeTrucks')}</Text>
           <Text style={styles.statValue}>5</Text>
         </View>
         <View style={styles.statBox}>
-          <Text style={styles.statLabel}>Points Redeemed</Text>
+          <Text style={styles.statLabel}>{t('pointsRedeemed')}</Text>
           <Text style={styles.statValue}>8,920</Text>
         </View>
       </View>
 
       {/* Weekly Graph */}
-      <Text style={styles.sectionTitle}>Weekly Activity</Text>
+      <Text style={styles.sectionTitle}>{t('weeklyActivity')}</Text>
       <LineChart
         data={weeklyData}
         width={screenWidth - 32}
@@ -94,20 +95,20 @@ const AdminDashboard: React.FC = () => {
       />
 
       {/* Truck Status */}
-      <Text style={styles.sectionTitle}>Truck Status</Text>
+      <Text style={styles.sectionTitle}>{t('truckStatus')}</Text>
       <View style={styles.truckRow}>
         <View style={styles.truckBox}>
-          <Text style={styles.truckStatusLabel}>Online</Text>
+          <Text style={styles.truckStatusLabel}>{t('online')}</Text>
           <Text style={styles.truckStatusValue}>3</Text>
         </View>
         <View style={styles.truckBox}>
-          <Text style={styles.truckStatusLabel}>Offline</Text>
+          <Text style={styles.truckStatusLabel}>{t('offline')}</Text>
           <Text style={styles.truckStatusValue}>2</Text>
         </View>
       </View>
 
       {/* Recent Reports */}
-      <Text style={styles.sectionTitle}>Recent Reports</Text>
+      <Text style={styles.sectionTitle}>{t('recentReports')}</Text>
       <FlatList
         data={recentReports}
         keyExtractor={(item) => item.id}

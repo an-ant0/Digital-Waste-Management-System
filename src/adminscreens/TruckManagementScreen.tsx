@@ -9,6 +9,7 @@ import {
   Modal,
   TextInput,
   ScrollView,
+  Keyboard,
 } from 'react-native';
 
 interface Truck {
@@ -39,7 +40,6 @@ const TruckManagementScreen: React.FC = () => {
     }
   };
 
-
   useEffect(() => {
     // Dummy data – replace with real API call
     const dummy: Truck[] = [
@@ -64,6 +64,12 @@ const TruckManagementScreen: React.FC = () => {
     setModalVisible(true);
   };
 
+  const closeModal = () => {
+    setModalVisible(false);
+    resetForm();
+    Keyboard.dismiss();
+  };
+
   const handleSave = () => {
     if (!driverName || !plateNumber || !route) {
       Alert.alert('All fields are required.');
@@ -84,8 +90,7 @@ const TruckManagementScreen: React.FC = () => {
       setTrucks(prev => [...prev, newTruck]);
     }
 
-    setModalVisible(false);
-    resetForm();
+    closeModal();
   };
 
   const handleDelete = (id: string) => {
@@ -131,32 +136,42 @@ const TruckManagementScreen: React.FC = () => {
       </TouchableOpacity>
 
       {/* Modal */}
-      <Modal visible={modalVisible} transparent animationType="slide">
+      <Modal visible={modalVisible} transparent animationType="slide" onRequestClose={closeModal}>
         <View style={styles.modalOverlay}>
-          <ScrollView style={styles.modalContent}>
+          <ScrollView style={styles.modalContent} keyboardShouldPersistTaps="handled">
             <Text style={styles.modalHeader}>{editingTruck ? 'Edit Truck' : 'Add New Truck'}</Text>
             <TextInput
               placeholder="Driver Name"
               style={styles.input}
               value={driverName}
               onChangeText={setDriverName}
+              autoCapitalize="words"
+              returnKeyType="next"
             />
             <TextInput
               placeholder="Plate Number"
               style={styles.input}
               value={plateNumber}
               onChangeText={setPlateNumber}
+              autoCapitalize="characters"
+              returnKeyType="next"
             />
             <TextInput
               placeholder="Route / Area Covered"
               style={styles.input}
               value={route}
               onChangeText={setRoute}
+              autoCapitalize="words"
+              returnKeyType="done"
             />
-            <TouchableOpacity style={styles.saveBtn} onPress={handleSave}>
+            <TouchableOpacity
+              style={[styles.saveBtn, (!driverName || !plateNumber || !route) && { opacity: 0.5 }]}
+              onPress={handleSave}
+              disabled={!driverName || !plateNumber || !route}
+            >
               <Text style={styles.btnText}>Save</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.cancelBtn} onPress={() => { setModalVisible(false); resetForm(); }}>
+            <TouchableOpacity style={styles.cancelBtn} onPress={closeModal}>
               <Text style={styles.btnText}>Cancel</Text>
             </TouchableOpacity>
           </ScrollView>

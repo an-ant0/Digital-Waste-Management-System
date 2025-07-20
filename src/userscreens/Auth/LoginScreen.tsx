@@ -13,7 +13,6 @@ import {
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../navigation/types';
 
-// IMPORTANT: Ensure this matches the name in your RootStackParamList
 type Props = NativeStackScreenProps<RootStackParamList, 'UserLogin'>;
 
 const LoginScreen: React.FC<Props> = ({ navigation }) => {
@@ -22,7 +21,10 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
-    if (!emailOrPhone || !password) {
+    const trimmedEmailOrPhone = emailOrPhone.trim();
+    const trimmedPassword = password.trim();
+
+    if (!trimmedEmailOrPhone || !trimmedPassword) {
       Alert.alert('Error', 'Please enter both email/phone and password.');
       return;
     }
@@ -30,33 +32,38 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
     setLoading(true);
 
     try {
-      // IMPORTANT: Replace with your computer's actual local IP address
-      const API_URL = 'http://192.168.1.76:5000/api/users/login';
+      const API_URL = 'http://192.168.1.130:5000/api/users/login';
 
       const response = await fetch(API_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ emailOrPhone, password }),
+        body: JSON.stringify({
+          emailOrPhone: trimmedEmailOrPhone,
+          password: trimmedPassword,
+        }),
       });
 
       const data = await response.json();
+      console.log('Login response data:', data);
 
-      if (response.ok) {
+      if (response.ok && data._id && data.firstName) {
         Alert.alert('Login Successful', data.message || 'Welcome back!');
-        // Pass the user's _id and role (assuming 'user' for now) to the Home screen
-        navigation.reset({
-          index: 0,
-          routes: [{ name: 'Home', params: { userId: data._id, role: 'user' } }], // Pass userId and role here
+        navigation.replace('Home', {
+          userId: data._id,
+          role: 'user',
+          userName: `${data.firstName} ${data.lastName ?? ''}`.trim(),
         });
       } else {
         Alert.alert('Login Failed', data.message || 'Invalid credentials. Please try again.');
-        console.error('Backend Login Error:', data);
       }
     } catch (error) {
-      console.error('Network or other error during login:', error);
-      Alert.alert('Error', 'Could not connect to the server. Please check your internet connection or server status.');
+      console.error('Login Error:', error);
+      Alert.alert(
+        'Network Error',
+        'Unable to connect. Please check your server or internet connection.'
+      );
     } finally {
       setLoading(false);
     }
@@ -73,7 +80,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
         <TextInput
           style={styles.input}
           placeholder="Phone Number or Email"
-          keyboardType="email-address"
+          keyboardType="default"
           value={emailOrPhone}
           onChangeText={setEmailOrPhone}
           autoCapitalize="none"

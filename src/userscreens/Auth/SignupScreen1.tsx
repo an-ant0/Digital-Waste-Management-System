@@ -13,18 +13,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
-
-type RootStackParamList = {
-  Signup1: undefined;
-  Signup2: {
-    firstName: string;
-    middleName: string;
-    lastName: string;
-    homeNumber: string;
-    wardNumber: string;
-    localityName: string;
-  };
-};
+import { RootStackParamList } from '../../navigation/types'; // ✅ Use centralized types
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Signup1'>;
 
@@ -40,18 +29,24 @@ const SignupScreen1: React.FC = () => {
   const [localityName, setLocalityName] = useState('');
 
   const handleNext = () => {
-    if (!firstName || !lastName || !homeNumber || !wardNumber || !localityName) {
+    if (
+      !firstName.trim() ||
+      !lastName.trim() ||
+      !homeNumber.trim() ||
+      !wardNumber.trim() ||
+      !localityName.trim()
+    ) {
       Alert.alert(t('missingInfoTitle'), t('missingInfoMessage'));
       return;
     }
 
     navigation.navigate('Signup2', {
-      firstName,
-      middleName,
-      lastName,
-      homeNumber,
-      wardNumber,
-      localityName,
+      firstName: firstName.trim(),
+      middleName: middleName.trim(),
+      lastName: lastName.trim(),
+      homeNumber: homeNumber.trim(),
+      wardNumber: wardNumber.trim(),
+      localityName: localityName.trim(),
     });
   };
 
@@ -71,18 +66,21 @@ const SignupScreen1: React.FC = () => {
             placeholder={t('firstName') + ' *'}
             value={firstName}
             onChangeText={setFirstName}
+            autoCapitalize="words"
           />
           <TextInput
             style={styles.input}
             placeholder={t('middleName')}
             value={middleName}
             onChangeText={setMiddleName}
+            autoCapitalize="words"
           />
           <TextInput
             style={styles.input}
             placeholder={t('lastName') + ' *'}
             value={lastName}
             onChangeText={setLastName}
+            autoCapitalize="words"
           />
         </View>
 
@@ -92,20 +90,21 @@ const SignupScreen1: React.FC = () => {
           <TextInput
             style={styles.input}
             placeholder={t('homeNumber') + ' *'}
-            keyboardType="number-pad"
+            keyboardType="default"
             value={homeNumber}
             onChangeText={setHomeNumber}
           />
           <TextInput
             style={styles.input}
             placeholder={t('wardNumber') + ' *'}
-            keyboardType="number-pad"
+            keyboardType="default"
             value={wardNumber}
             onChangeText={setWardNumber}
           />
           <TextInput
             style={styles.input}
             placeholder={t('localityName') + ' *'}
+            autoCapitalize="words"
             value={localityName}
             onChangeText={setLocalityName}
           />

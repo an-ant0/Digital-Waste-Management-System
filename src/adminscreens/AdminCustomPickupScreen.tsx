@@ -36,7 +36,7 @@ const AdminCustomPickupScreen: React.FC = () => {
   const [requests, setRequests] = useState<PickupRequest[]>([]);
 
   useEffect(() => {
-    // You would typically fetch this from a backend
+    // Simulate fetching data from backend
     setRequests(sampleRequests);
   }, []);
 
@@ -83,12 +83,41 @@ const AdminCustomPickupScreen: React.FC = () => {
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <View style={styles.card}>
-            <Text style={styles.label}>User: <Text style={styles.value}>{item.user}</Text></Text>
-            <Text style={styles.label}>Address: <Text style={styles.value}>{item.address}</Text></Text>
-            <Text style={styles.label}>Date: <Text style={styles.value}>{item.date}</Text></Text>
-            <Text style={styles.label}>Amount: <Text style={styles.value}>Rs. {item.price}</Text></Text>
-            <Text style={styles.label}>Payment: <Text style={[styles.value, item.paymentStatus === 'Paid' ? styles.paid : styles.unpaid]}>{item.paymentStatus}</Text></Text>
-            <Text style={styles.label}>Status: <Text style={[styles.value, item.status === 'Pending' ? styles.pending : styles.completed]}>{item.status}</Text></Text>
+            <Text style={styles.label}>
+              User: <Text style={styles.value}>{item.user}</Text>
+            </Text>
+            <Text style={styles.label}>
+              Address: <Text style={styles.value}>{item.address}</Text>
+            </Text>
+            <Text style={styles.label}>
+              Date: <Text style={styles.value}>{item.date}</Text>
+            </Text>
+            <Text style={styles.label}>
+              Amount: <Text style={styles.value}>Rs. {item.price}</Text>
+            </Text>
+            <Text style={styles.label}>
+              Payment:{' '}
+              <Text
+                style={[
+                  styles.value,
+                  item.paymentStatus === 'Paid' ? styles.paid : styles.unpaid,
+                ]}
+              >
+                {item.paymentStatus}
+              </Text>
+            </Text>
+            <Text style={styles.label}>
+              Status:{' '}
+              <Text
+                style={[
+                  styles.value,
+                  item.status === 'Pending' ? styles.pending : styles.completed,
+                ]}
+              >
+                {item.status}
+              </Text>
+            </Text>
+
             {item.status === 'Pending' && item.paymentStatus === 'Unpaid' && (
               <TouchableOpacity
                 style={styles.button}
@@ -106,7 +135,6 @@ const AdminCustomPickupScreen: React.FC = () => {
                 <Text style={styles.buttonText}>Mark as Completed</Text>
               </TouchableOpacity>
             )}
-
           </View>
         )}
       />

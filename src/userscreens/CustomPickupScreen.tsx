@@ -17,6 +17,8 @@ import Geocoder from 'react-native-geocoding';
 import { useNavigation } from '@react-navigation/native';
 
 const SERVICE_FEE = 200;
+
+// TODO: Replace with your actual Google Maps API Key
 Geocoder.init('YOUR_GOOGLE_MAPS_API_KEY');
 
 const CustomPickupScreen: React.FC = () => {
@@ -41,7 +43,7 @@ const CustomPickupScreen: React.FC = () => {
     Alert.alert(
       t('pickupRequested'),
       t('pickupSuccessMessage', {
-        date: date.toDateString(),
+        date: date.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }),
         timeSlot,
         address,
         fee: SERVICE_FEE,
@@ -113,7 +115,9 @@ const CustomPickupScreen: React.FC = () => {
       <Text style={styles.label}>{t('pickupDate')} *</Text>
       <TouchableOpacity style={styles.datePicker} onPress={() => setShowDatePicker(true)}>
         <Text style={{ color: date ? '#000' : '#999' }}>
-          {date ? date.toDateString() : t('selectDate')}
+          {date
+            ? date.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })
+            : t('selectDate')}
         </Text>
       </TouchableOpacity>
 
@@ -122,6 +126,7 @@ const CustomPickupScreen: React.FC = () => {
           value={date || new Date()}
           mode="date"
           display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+          minimumDate={new Date()}
           onChange={(_, selectedDate?: Date) => {
             setShowDatePicker(false);
             if (selectedDate) setDate(selectedDate);

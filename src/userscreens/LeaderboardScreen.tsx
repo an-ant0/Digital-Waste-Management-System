@@ -29,19 +29,34 @@ const mockTopUsers: User[] = [
 const LeaderboardScreen: React.FC = () => {
   const { t } = useTranslation();
 
-  const renderItem = ({ item }: { item: User }) => (
-    <View style={styles.userRow}>
-      <Text style={styles.rankText}>
-        {item.rank === 1 ? '🥇' : item.rank === 2 ? '🥈' : item.rank === 3 ? '🥉' : `#${item.rank}`}
-      </Text>
-      <View style={styles.nameContainer}>
-        <Text style={styles.name}>{item.name}</Text>
-        <Text style={styles.points}>
-          {item.points} {t('points')}
+  const renderItem = ({ item }: { item: User }) => {
+    const backgroundColors = ['#FFD70033', '#C0C0C033', '#CD7F3233']; // Gold, Silver, Bronze translucent
+
+    return (
+      <View
+        style={[
+          styles.userRow,
+          item.rank <= 3 && { backgroundColor: backgroundColors[item.rank - 1] },
+        ]}
+      >
+        <Text style={styles.rankText}>
+          {item.rank === 1
+            ? '🥇'
+            : item.rank === 2
+            ? '🥈'
+            : item.rank === 3
+            ? '🥉'
+            : `#${item.rank}`}
         </Text>
+        <View style={styles.nameContainer}>
+          <Text style={styles.name}>{item.name}</Text>
+          <Text style={styles.points}>
+            {item.points} {t('points')}
+          </Text>
+        </View>
       </View>
-    </View>
-  );
+    );
+  };
 
   return (
     <SafeAreaView style={styles.container}>

@@ -6,12 +6,19 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
 
-type AdminLoginScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'AdminLogin'>;
+type AdminLoginScreenNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  'AdminLogin'
+>;
 
 const AdminLoginScreen: React.FC = () => {
   const navigation = useNavigation<AdminLoginScreenNavigationProp>();
@@ -20,8 +27,18 @@ const AdminLoginScreen: React.FC = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
+  const onUsernameChange = (text: string) => {
+    setUsername(text);
+    if (error) setError('');
+  };
+
+  const onPasswordChange = (text: string) => {
+    setPassword(text);
+    if (error) setError('');
+  };
+
   const handleLogin = () => {
-    if (!username || !password) {
+    if (!username.trim() || !password.trim()) {
       setError('Please enter both username and password.');
       return;
     }
@@ -29,38 +46,53 @@ const AdminLoginScreen: React.FC = () => {
     if (username === '1' && password === '1') {
       Alert.alert('Login Success', 'Welcome, Admin!');
       setError('');
-      navigation.navigate('Home', { role: 'admin' }); // ✅ Typed correctly now
+      navigation.navigate('Home', { role: 'admin' });
     } else {
       setError('Invalid credentials. Please try again.');
     }
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.heading}>Admin Login</Text>
+    <KeyboardAvoidingView
+      style={{ flex: 1, backgroundColor: '#F4F6F8' }}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View style={styles.container}>
+          <Text style={styles.heading}>Admin Login</Text>
 
-      <TextInput
-        placeholder="Username"
-        style={styles.input}
-        value={username}
-        onChangeText={setUsername}
-        autoCapitalize="none"
-      />
+          <TextInput
+            placeholder="Username"
+            style={styles.input}
+            value={username}
+            onChangeText={onUsernameChange}
+            autoCapitalize="none"
+            autoCorrect={false}
+            keyboardType="default"
+            returnKeyType="next"
+            onSubmitEditing={() => {
+              // Focus password input if you want (requires ref)
+            }}
+          />
 
-      <TextInput
-        placeholder="Password"
-        style={styles.input}
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
+          <TextInput
+            placeholder="Password"
+            style={styles.input}
+            value={password}
+            onChangeText={onPasswordChange}
+            secureTextEntry
+            returnKeyType="done"
+            onSubmitEditing={handleLogin}
+          />
 
-      {error ? <Text style={styles.error}>{error}</Text> : null}
+          {error ? <Text style={styles.error}>{error}</Text> : null}
 
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Login</Text>
-      </TouchableOpacity>
-    </View>
+          <TouchableOpacity style={styles.button} onPress={handleLogin}>
+            <Text style={styles.buttonText}>Login</Text>
+          </TouchableOpacity>
+        </View>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -69,7 +101,6 @@ export default AdminLoginScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F4F6F8',
     padding: 24,
     justifyContent: 'center',
   },

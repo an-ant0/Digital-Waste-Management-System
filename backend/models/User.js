@@ -1,92 +1,93 @@
-// backend/models/User.js
-const mongoose = require('mongoose'); // Import Mongoose
-const bcrypt = require('bcryptjs'); // Import bcryptjs for password hashing
+const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 
-// Define the User Schema
 const userSchema = mongoose.Schema(
   {
-    // Personal Information from SignupScreen1
     firstName: {
       type: String,
-      required: [true, 'First name is required'], // First name is mandatory
+      required: [true, 'First name is required'],
     },
     middleName: {
       type: String,
-      default: '', // Middle name is optional, default to empty string
+      default: '',
     },
     lastName: {
       type: String,
-      required: [true, 'Last name is required'], // Last name is mandatory
+      required: [true, 'Last name is required'],
     },
 
-    // Address Information from SignupScreen1
     homeNumber: {
       type: String,
-      required: [true, 'Home number is required'], // Home number is mandatory
+      required: [true, 'Home number is required'],
     },
     wardNumber: {
       type: String,
-      required: [true, 'Ward number is required'], // Ward number is mandatory
+      required: [true, 'Ward number is required'],
     },
     localityName: {
       type: String,
-      required: [true, 'Locality name is required'], // Locality name is mandatory
+      required: [true, 'Locality name is required'],
     },
 
-    // Identity and Profile Information from SignupScreen2
     profilePic: {
-      type: String, // Store as base64 string or URL
-      default: '', // Optional profile picture
+      type: String,
+      default: '',
     },
     idType: {
       type: String,
-      required: [true, 'ID type is required'], // e.g., Citizenship, Passport, VoterID
+      required: [true, 'ID type is required'],
     },
     idNumber: {
       type: String,
       required: [true, 'ID number is required'],
-      unique: true, // ID number must be unique for each user
+      unique: true,
     },
     idPhoto: {
-      type: String, // Store as base64 string or URL
-      required: [true, 'ID photo is required'], // ID photo is mandatory
+      type: String,
+      required: [true, 'ID photo is required'],
     },
 
-    // Contact and Authentication Information from SignupScreen3
     phone: {
       type: String,
       required: [true, 'Phone number is required'],
-      unique: true, // Phone number must be unique
+      unique: true,
     },
     email: {
       type: String,
       required: [true, 'Email is required'],
-      unique: true, // Email must be unique
-      match: [/.+@.+\..+/, 'Please enter a valid email address'], // Basic email format validation
+      unique: true,
+      match: [/.+@.+\..+/, 'Please enter a valid email address'],
     },
     password: {
       type: String,
-      required: [true, 'Password is required'], // Hashed password
+      required: [true, 'Password is required'],
+    },
+
+    role: {
+      type: String,
+      enum: ['user', 'admin'],
+      default: 'user',
     },
   },
   {
-    timestamps: true, // Adds `createdAt` and `updatedAt` fields automatically
+    timestamps: true,
   }
 );
 
-// Middleware to hash password before saving the user
+// Hash password before saving
 userSchema.pre('save', async function (next) {
-  // Only hash the password if it has been modified (or is new)
-  if (!this.isModified('password')) {
-    next(); // Move to the next middleware
-  }
+  if (!this.isModified('password')) return next();
 
-  // Generate a salt with 10 rounds
   const salt = await bcrypt.genSalt(10);
-  // Hash the password using the generated salt
   this.password = await bcrypt.hash(this.password, salt);
+  next();
 });
 
-// Create and export the User model
+// Compare entered password to hashed password
+userSchema.methods.matchPassword = async function (enteredPassword) {
+  return await bcrypt.compare(enteredPassword, this.password);
+};
+
 const User = mongoose.model('User', userSchema);
+
 module.exports = User;

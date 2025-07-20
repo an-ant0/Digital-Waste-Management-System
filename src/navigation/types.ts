@@ -1,69 +1,69 @@
-// frontend/navigation/types.ts
+// Shared user address details
+type AddressInfo = {
+  firstName: string;
+  middleName: string;
+  lastName: string;
+  homeNumber: string;
+  wardNumber: string;
+  localityName: string;
+};
+
+// Signup step-by-step details
+type Signup2Params = AddressInfo;
+
+type Signup3Params = Signup2Params & {
+  profilePic: string | null;
+  idType: string;
+  idNumber: string;
+  idPhoto: string | null;
+};
+
+type Signup4Params = Signup3Params & {
+  phone: string;
+  email: string;
+  otp: string;
+  password: string;
+};
+
+// Main Navigation Type
 export type RootStackParamList = {
+  // Onboarding & Auth
   Splash: undefined;
   LanguageSelection: undefined;
   Selection: undefined;
-  UserLogin: undefined; // Changed from 'Login' to 'UserLogin' to match your previous definition
+  UserLogin: undefined;
   AdminLogin: undefined;
 
+  // Signup flow
   Signup1: undefined;
+  Signup2: Signup2Params;
+  Signup3: Signup3Params;
+  Signup4: Signup4Params;
 
-  Signup2: {
-    firstName: string;
-    middleName: string;
-    lastName: string;
-    homeNumber: string;
-    wardNumber: string;
-    localityName: string;
-  };
+  // Main user/admin entry
+  Home: { userId: string; role: 'user' | 'admin'; userName: string };
 
-  Signup3: {
-    firstName: string;
-    middleName: string;
-    lastName: string;
-    homeNumber: string;
-    wardNumber: string;
-    localityName: string;
-    profilePic: string | null; // Changed to allow null
-    idType: string;
-    idNumber: string;
-    idPhoto: string | null; // Changed to allow null
-  };
+  // User Screens
+  Profile: { userId: string };
+  Rewards: undefined;
+  RewardHistory: undefined;
+  ReportWaste: undefined;
+  ReportHistory: undefined;
+  CustomPickup: undefined;
+  Support: undefined;
+  Feedback: undefined;
+  Badges: undefined;
+  Leaderboard: undefined;
+  RedeemedPoints: { userId: string };
 
-  Signup4: {
-    firstName: string;
-    middleName: string;
-    lastName: string;
-    homeNumber: string;
-    wardNumber: string;
-    localityName: string;
-    profilePic: string | null; // Changed to allow null
-    idType: string;
-    idNumber: string;
-    idPhoto: string | null; // Changed to allow null
-    phone: string;
-    email: string;
-    otp: string;
-    password: string;
-  };
-  Home: { userId: string; role: 'user' | 'admin' }; // Corrected: Home expects userId and role
+  // Admin Screens
   AdminDashboard: undefined;
-  Profile: { userId: string }; // Corrected: Profile expects userId
   AdminProfile: undefined;
   ManageUsers: undefined;
-  Feedback: undefined;
-  Rewards: undefined;
-  ReportHistory: undefined;
-  Support: undefined;
-  RewardHistory: undefined;
-  PointsRedemption: undefined;
-  ReportWaste: undefined;
   AdminWasteReview: undefined;
   AdminWasteHistory: undefined;
-  CustomPickup: undefined;
   AdminCustomPickup: undefined;
   TruckManagement: undefined;
   TruckLocation: undefined;
-  Badges: undefined;
-  Leaderboard: undefined;
+  PointsRedemption: undefined;
 };

@@ -1,18 +1,25 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, Alert } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useTranslation } from 'react-i18next';
 
 const AdminProfileScreen: React.FC = () => {
+  const navigation = useNavigation();
+  const { t } = useTranslation();
+
   const admin = {
     name: 'Admin User',
     email: 'admin@example.com',
     phone: '9801234567',
-    role: 'Administrator',
+    role: t('administrator'),  // Example i18n key
     profileImage: 'https://via.placeholder.com/150',
   };
 
-  const handleLogout = () => {
-    Alert.alert('Logout', 'You have been logged out successfully.');
-    // Add navigation to login or splash screen here
+  const handleLogout = async () => {
+    await AsyncStorage.clear(); // clear session/storage
+    Alert.alert(t('logout'), t('logoutSuccess'));
+    navigation.replace('AdminLogin'); // adjust screen name accordingly
   };
 
   return (
@@ -22,15 +29,19 @@ const AdminProfileScreen: React.FC = () => {
       <Text style={styles.role}>{admin.role}</Text>
 
       <View style={styles.infoBox}>
-        <Text style={styles.label}>Email</Text>
+        <Text style={styles.label}>{t('email')}</Text>
         <Text style={styles.value}>{admin.email}</Text>
 
-        <Text style={styles.label}>Phone</Text>
+        <Text style={styles.label}>{t('phone')}</Text>
         <Text style={styles.value}>{admin.phone}</Text>
       </View>
 
-      <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
-        <Text style={styles.logoutText}>Logout</Text>
+      <TouchableOpacity
+        style={styles.logoutBtn}
+        onPress={handleLogout}
+        accessibilityLabel={t('logout')}
+      >
+        <Text style={styles.logoutText}>{t('logout')}</Text>
       </TouchableOpacity>
     </View>
   );

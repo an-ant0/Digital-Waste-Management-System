@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   Alert,
   ActivityIndicator,
-  ScrollView,
 } from 'react-native';
 
 interface RedemptionRequest {
@@ -53,16 +52,20 @@ const PointsRedemptionScreen: React.FC = () => {
     setLoading(false);
   }, []);
 
+  const generateRechargeCode = (service: 'NCELL' | 'NTC') => {
+    const random = Math.floor(100000 + Math.random() * 900000).toString();
+    return `${service}-${random}`;
+  };
+
   const approveRequest = (id: string) => {
-    const code = generateRechargeCode();
     setRequests(prev =>
       prev.map(req =>
         req.id === id
-          ? { ...req, status: 'Approved', rechargeCode: code }
+          ? { ...req, status: 'Approved', rechargeCode: generateRechargeCode(req.service) }
           : req
       )
     );
-    Alert.alert('Approved', `Recharge code generated:\n${code}`);
+    Alert.alert('Approved', 'Recharge code generated and assigned.');
   };
 
   const rejectRequest = (id: string) => {
@@ -72,12 +75,6 @@ const PointsRedemptionScreen: React.FC = () => {
       )
     );
     Alert.alert('Rejected', 'Redemption request has been rejected.');
-  };
-
-  const generateRechargeCode = () => {
-    const prefix = Math.random() > 0.5 ? 'NCELL' : 'NTC';
-    const random = Math.floor(100000 + Math.random() * 900000).toString();
-    return `${prefix}-${random}`;
   };
 
   const renderItem = ({ item }: { item: RedemptionRequest }) => (
@@ -129,7 +126,7 @@ const PointsRedemptionScreen: React.FC = () => {
   if (loading) return <ActivityIndicator size="large" style={{ marginTop: 40 }} color="#1E90FF" />;
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <View style={styles.container}>
       <Text style={styles.header}>Points Redemption Requests</Text>
       <FlatList
         data={requests}
@@ -137,7 +134,7 @@ const PointsRedemptionScreen: React.FC = () => {
         keyExtractor={item => item.id}
         contentContainerStyle={{ paddingBottom: 100 }}
       />
-    </ScrollView>
+    </View>
   );
 };
 
@@ -147,6 +144,7 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
     backgroundColor: '#F4F4F4',
+    flex: 1,
   },
   header: {
     fontSize: 22,

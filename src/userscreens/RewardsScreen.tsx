@@ -109,7 +109,14 @@ const RewardsScreen: React.FC = () => {
       </View>
       <Text style={styles.description}>{item.description}</Text>
       <Text style={styles.points}>{t('pointsRequired')}: {item.pointsRequired}</Text>
-      <TouchableOpacity style={styles.redeemBtn} onPress={() => handleRedeemPress(item)}>
+      <TouchableOpacity
+        style={[
+          styles.redeemBtn,
+          availablePoints < item.pointsRequired && { backgroundColor: '#ccc' },
+        ]}
+        onPress={() => handleRedeemPress(item)}
+        disabled={availablePoints < item.pointsRequired}
+      >
         <Text style={styles.redeemText}>{t('redeem')}</Text>
       </TouchableOpacity>
     </View>

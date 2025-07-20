@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useLayoutEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   View,
@@ -11,7 +11,6 @@ import {
 } from 'react-native';
 
 import { useNavigation } from '@react-navigation/native';
-import { useLayoutEffect } from 'react';
 
 const FeedbackScreen: React.FC = () => {
   const { t } = useTranslation();
@@ -45,7 +44,11 @@ const FeedbackScreen: React.FC = () => {
         value={feedback}
         onChangeText={setFeedback}
       />
-      <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+      <TouchableOpacity
+        style={[styles.button, feedback.trim().length < 10 && styles.buttonDisabled]}
+        onPress={handleSubmit}
+        disabled={feedback.trim().length < 10}
+      >
         <Text style={styles.buttonText}>{t('submitFeedback')}</Text>
       </TouchableOpacity>
     </ScrollView>
@@ -86,6 +89,9 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: 8,
     alignItems: 'center',
+  },
+  buttonDisabled: {
+    backgroundColor: '#a0c4ff',
   },
   buttonText: {
     color: '#fff',

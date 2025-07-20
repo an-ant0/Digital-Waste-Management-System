@@ -32,10 +32,9 @@ const wasteTypes = [
 ];
 
 const ReportWasteScreen: React.FC = () => {
-  const { t } = useTranslation(); // ✅ Declare this early
+  const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
-  // ✅ Set screen title and header icon
   useLayoutEffect(() => {
     navigation.setOptions({
       title: t('reportWaste'),

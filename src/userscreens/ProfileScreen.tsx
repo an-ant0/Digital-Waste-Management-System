@@ -11,20 +11,34 @@ import {
   ScrollView,
   RefreshControl,
 } from 'react-native';
-// IMPORTANT: Add this import for launchImageLibrary
 import { launchImageLibrary } from 'react-native-image-picker';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList } from '../navigation/types'; // adjust path if needed
+import { RootStackParamList } from '../navigation/types';
 
-// Define the type for the route props, now expecting userId
+// Define types for navigation and route props
 type ProfileScreenRouteProp = RouteProp<RootStackParamList, 'Profile'>;
 type ProfileScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Profile'>;
 
 const ProfileScreen: React.FC = () => {
   const navigation = useNavigation<ProfileScreenNavigationProp>();
   const route = useRoute<ProfileScreenRouteProp>();
-  const { userId } = route.params; // Get userId from route params
+  const userId = route.params?.userId;
+
+  // If userId is missing, show fallback UI
+  if (!userId) {
+    return (
+      <View style={[styles.container, styles.containerCentered]}>
+        <Text style={styles.errorText}>User ID is missing. Please login again.</Text>
+        <TouchableOpacity
+          style={styles.logoutButton}
+          onPress={() => navigation.reset({ index: 0, routes: [{ name: 'UserLogin' }] })}
+        >
+          <Text style={styles.logoutText}>Go to Login</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
   const [profilePic, setProfilePic] = useState<string | null>(null);
   const [firstName, setFirstName] = useState('');
@@ -34,13 +48,12 @@ const ProfileScreen: React.FC = () => {
   const [email, setEmail] = useState('');
   const [homeNumber, setHomeNumber] = useState('');
   const [wardNumber, setWardNumber] = useState('');
-  const [localityName, setLocalityName] = useState(''); // Changed from 'locality' to match backend
+  const [localityName, setLocalityName] = useState('');
   const [isEditing, setIsEditing] = useState(false);
-  const [loading, setLoading] = useState(true); // Initial loading state for data fetch
-  const [saving, setSaving] = useState(false); // State for save operation
-  const [refreshing, setRefreshing] = useState(false); // State for pull-to-refresh
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
-  // IMPORTANT: Use your computer's actual local IP address
   const API_BASE_URL = 'http://192.168.1.76:5000/api/users';
 
   const fetchUserProfile = useCallback(async () => {
@@ -71,21 +84,19 @@ const ProfileScreen: React.FC = () => {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [userId]); // Dependency array includes userId
+  }, [userId]);
 
   useEffect(() => {
-    if (userId) { // Only fetch if userId is available
-      fetchUserProfile();
-    }
-  }, [userId, fetchUserProfile]); // Re-fetch if userId changes or fetchUserProfile memoized function changes
+    fetchUserProfile();
+  }, [fetchUserProfile]);
 
   const handleChoosePhoto = async () => {
     const result = await launchImageLibrary({
       mediaType: 'photo',
       maxWidth: 800,
       maxHeight: 800,
-      quality: 0.5, // Reduce quality for base64
-      includeBase64: true, // Request base64 data
+      quality: 0.5,
+      includeBase64: true,
     });
 
     if (result.didCancel) return;
@@ -93,11 +104,9 @@ const ProfileScreen: React.FC = () => {
       Alert.alert('Error', result.errorMessage || 'Image selection failed.');
       return;
     }
-    const uri = result.assets?.[0]?.uri;
-    const base64Data = result.assets?.[0]?.base64;
-
-    if (uri && base64Data) {
-      setProfilePic(`data:${result.assets?.[0]?.type};base64,${base64Data}`);
+    const asset = result.assets?.[0];
+    if (asset?.uri && asset?.base64 && asset?.type) {
+      setProfilePic(`data:${asset.type};base64,${asset.base64}`);
     } else {
       Alert.alert('Error', 'Failed to get image data.');
     }
@@ -116,14 +125,13 @@ const ProfileScreen: React.FC = () => {
       return;
     }
 
-    setSaving(true); // Start saving indicator
+    setSaving(true);
 
     try {
       const response = await fetch(`${API_BASE_URL}/profile/${userId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          // In a real app, you'd send a JWT token here: 'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
           firstName,
@@ -132,7 +140,7 @@ const ProfileScreen: React.FC = () => {
           homeNumber,
           wardNumber,
           localityName,
-          profilePic, // Send base64 string
+          profilePic,
           phone,
           email,
         }),
@@ -142,8 +150,8 @@ const ProfileScreen: React.FC = () => {
 
       if (response.ok) {
         Alert.alert('Saved', data.message || 'Profile updated successfully.');
-        setIsEditing(false); // Exit editing mode
-        fetchUserProfile(); // Re-fetch to ensure UI is in sync with DB
+        setIsEditing(false);
+        fetchUserProfile();
       } else {
         Alert.alert('Error', data.message || 'Failed to update profile.');
         console.error('Backend Update Error:', data);
@@ -152,7 +160,7 @@ const ProfileScreen: React.FC = () => {
       console.error('Network or other error during profile update:', error);
       Alert.alert('Error', 'Could not update profile. Check network connection.');
     } finally {
-      setSaving(false); // Stop saving indicator
+      setSaving(false);
     }
   };
 
@@ -160,13 +168,13 @@ const ProfileScreen: React.FC = () => {
     Alert.alert('Logged Out', 'You have been logged out.');
     navigation.reset({
       index: 0,
-      routes: [{ name: 'UserLogin' }], // Changed to 'UserLogin' to match your RootStackParamList
+      routes: [{ name: 'UserLogin' }],
     });
   };
 
   if (loading) {
     return (
-      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+      <View style={[styles.container, styles.containerCentered]}>
         <Text>Loading profile...</Text>
       </View>
     );
@@ -175,16 +183,18 @@ const ProfileScreen: React.FC = () => {
   return (
     <ScrollView
       contentContainerStyle={styles.container}
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={fetchUserProfile} />
-      }
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={fetchUserProfile} />}
     >
-      <TouchableOpacity onPress={isEditing ? handleChoosePhoto : undefined} disabled={!isEditing}>
+      <TouchableOpacity
+        onPress={isEditing ? handleChoosePhoto : undefined}
+        disabled={!isEditing}
+        style={{ alignSelf: 'center' }}
+      >
         <Image
           source={
             profilePic
               ? { uri: profilePic }
-              : require('../../assets/default-profile.png') // Ensure this path is correct or provide a placeholder
+              : require('../../assets/default-profile.png')
           }
           style={styles.profileImage}
         />
@@ -200,6 +210,7 @@ const ProfileScreen: React.FC = () => {
           style={styles.input}
         />
       </View>
+
       <View style={styles.field}>
         <Text style={styles.label}>Middle Name</Text>
         <TextInput
@@ -209,6 +220,7 @@ const ProfileScreen: React.FC = () => {
           style={styles.input}
         />
       </View>
+
       <View style={styles.field}>
         <Text style={styles.label}>Last Name</Text>
         <TextInput
@@ -271,7 +283,6 @@ const ProfileScreen: React.FC = () => {
         />
       </View>
 
-
       {isEditing ? (
         <TouchableOpacity
           style={[styles.saveButton, { opacity: saving ? 0.6 : 1 }]}
@@ -302,11 +313,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#F9F9F9',
     flexGrow: 1,
   },
+  containerCentered: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   profileImage: {
     width: 120,
     height: 120,
     borderRadius: 60,
-    alignSelf: 'center',
     marginBottom: 8,
   },
   editText: {
@@ -365,5 +379,11 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: '600',
+  },
+  errorText: {
+    fontSize: 18,
+    color: 'red',
+    marginBottom: 20,
+    textAlign: 'center',
   },
 });

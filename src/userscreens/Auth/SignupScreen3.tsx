@@ -23,25 +23,39 @@ const SignupScreen3: React.FC<Props> = ({ navigation, route }) => {
   const [confirmPassword, setConfirmPassword] = useState('');
 
   const handleNext = () => {
-    if (!phone || !email || !otp || !password || !confirmPassword) {
+    const trimmedPhone = phone.trim();
+    const trimmedEmail = email.trim();
+    const trimmedOtp = otp.trim();
+    const trimmedPassword = password.trim();
+    const trimmedConfirmPassword = confirmPassword.trim();
+
+    if (!trimmedPhone || !trimmedEmail || !trimmedOtp || !trimmedPassword || !trimmedConfirmPassword) {
       Alert.alert(t('missingFieldsTitle'), t('missingFieldsMessage'));
       return;
     }
 
-    if (password !== confirmPassword) {
+    if (!/^\d{10}$/.test(trimmedPhone)) {
+      Alert.alert('Invalid Phone', 'Phone number must be 10 digits.');
+      return;
+    }
+
+    if (trimmedPassword.length < 6) {
+      Alert.alert('Weak Password', 'Password must be at least 6 characters.');
+      return;
+    }
+
+    if (trimmedPassword !== trimmedConfirmPassword) {
       Alert.alert(t('passwordMismatchTitle'), t('passwordMismatchMessage'));
       return;
     }
 
-    const allData = {
+    navigation.navigate('Signup4', {
       ...route.params,
-      phone,
-      email,
-      otp,
-      password,
-    };
-
-    navigation.navigate('Signup4', allData);
+      phone: trimmedPhone,
+      email: trimmedEmail,
+      otp: trimmedOtp,
+      password: trimmedPassword,
+    });
   };
 
   return (
@@ -61,6 +75,7 @@ const SignupScreen3: React.FC<Props> = ({ navigation, route }) => {
           style={styles.input}
           placeholder={t('email')}
           keyboardType="email-address"
+          autoCapitalize="none"
           value={email}
           onChangeText={setEmail}
         />
