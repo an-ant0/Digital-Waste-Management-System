@@ -1,9 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, ActivityIndicator, Alert, Text } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
+import MapView, { Marker, Region } from 'react-native-maps';
+
+type Location = {
+  latitude: number;
+  longitude: number;
+};
 
 const TruckLocationScreen: React.FC = () => {
-  const [truckLocation, setTruckLocation] = useState<{ latitude: number; longitude: number } | null>(null);
+  const [truckLocation, setTruckLocation] = useState<Location | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -11,23 +16,37 @@ const TruckLocationScreen: React.FC = () => {
 
     const fetchLocation = async () => {
       try {
-        // Replace this URL with your real API endpoint
-        const res = await fetch('https://yourapi.com/api/truck-location');
-        if (!res.ok) throw new Error('Failed to fetch location');
-        const data = await res.json();
+        // Replace this URL with your actual backend API endpoint
+        const response = await fetch('https://yourapi.com/api/location');
+        if (!response.ok) throw new Error('Failed to fetch location');
 
-        if (isMounted && data.lat && data.lng) {
-          setTruckLocation({ latitude: data.lat, longitude: data.lng });
+        const data = await response.json();
+
+        // Validate if the data contains latitude and longitude
+        if (isMounted && data.latitude && data.longitude) {
+          setTruckLocation({
+            latitude: Number(data.latitude),
+            longitude: Number(data.longitude),
+          });
           setLoading(false);
+        } else {
+          if (isMounted) {
+            setTruckLocation(null);
+            setLoading(false);
+          }
         }
       } catch (error) {
-        Alert.alert('Error', 'Unable to fetch truck location');
-        setLoading(false);
+        if (isMounted) {
+          Alert.alert('Error', 'Unable to fetch truck location');
+          setLoading(false);
+        }
       }
     };
 
     fetchLocation();
-    const interval = setInterval(fetchLocation, 10000); // refresh every 10 seconds
+
+    // Refresh location every 10 seconds
+    const interval = setInterval(fetchLocation, 10000);
 
     return () => {
       isMounted = false;
@@ -36,21 +55,29 @@ const TruckLocationScreen: React.FC = () => {
   }, []);
 
   if (loading) {
-    return <ActivityIndicator size="large" style={{ flex: 1 }} />;
+    return <ActivityIndicator size="large" style={styles.center} />;
   }
 
   if (!truckLocation) {
-    return <View style={styles.center}><Text>Location data unavailable</Text></View>;
+    return (
+      <View style={styles.center}>
+        <Text>Location data unavailable</Text>
+      </View>
+    );
   }
+
+  // Define region based on current truck location
+  const region: Region = {
+    latitude: truckLocation.latitude,
+    longitude: truckLocation.longitude,
+    latitudeDelta: 0.01,
+    longitudeDelta: 0.01,
+  };
 
   return (
     <MapView
       style={styles.map}
-      initialRegion={{
-        ...truckLocation,
-        latitudeDelta: 0.01,
-        longitudeDelta: 0.01,
-      }}
+      initialRegion={region}
       showsUserLocation={false}
       showsMyLocationButton={true}
     >

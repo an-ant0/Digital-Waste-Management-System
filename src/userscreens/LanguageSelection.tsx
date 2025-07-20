@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 
 type RootStackParamList = {
   LanguageSelection: undefined;
-  NextScreen: undefined;
+  Home: undefined;
 };
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'LanguageSelection'>;
@@ -21,7 +21,7 @@ const LanguageSelection: React.FC = () => {
     try {
       await AsyncStorage.setItem('appLanguage', language);
       await i18n.changeLanguage(language);
-      navigation.navigate('NextScreen');
+      navigation.navigate('Home');
     } catch (error) {
       Alert.alert('Error', 'Failed to save language preference');
     }

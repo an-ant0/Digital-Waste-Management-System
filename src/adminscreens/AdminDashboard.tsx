@@ -1,4 +1,4 @@
-import React, { useLayoutEffect } from 'react';
+import React, { useLayoutEffect, useEffect, useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -7,12 +7,16 @@ import {
   FlatList,
   TouchableOpacity,
   Dimensions,
+  Alert,
+  Platform,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { LineChart } from 'react-native-chart-kit';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation/types';
 import { useTranslation } from 'react-i18next';
+
+import Geolocation from '@react-native-community/geolocation';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -35,6 +39,10 @@ const AdminDashboard: React.FC = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList, 'AdminDashboard'>>();
   const { t } = useTranslation();
 
+  // State to track current location status
+  const [location, setLocation] = useState<{ latitude: number; longitude: number } | null>(null);
+  const locationWatcherId = useRef<number | null>(null);
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -50,9 +58,75 @@ const AdminDashboard: React.FC = () => {
     });
   }, [navigation, t]);
 
+  // Function to send location to backend
+  const sendLocationToServer = async (latitude: number, longitude: number) => {
+    try {
+      const response = await fetch('http://YOUR_SERVER_IP_OR_DOMAIN/api/location', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ latitude, longitude }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to send location');
+      }
+      // Optionally you can handle the response data here
+    } catch (error) {
+      console.error('Error sending location:', error);
+    }
+  };
+
+  // Start watching location when component mounts
+  useEffect(() => {
+    // Ask for permission & watch position
+    const watchPosition = () => {
+      locationWatcherId.current = Geolocation.watchPosition(
+        (pos) => {
+          const { latitude, longitude } = pos.coords;
+          setLocation({ latitude, longitude });
+          sendLocationToServer(latitude, longitude);
+        },
+        (error) => {
+          console.warn('Geolocation error:', error.message);
+          Alert.alert(t('locationErrorTitle'), t('locationErrorMessage'));
+        },
+        {
+          enableHighAccuracy: true,
+          distanceFilter: 10, // Update if moved by 10 meters
+          interval: 10000, // Android: request location update every 10 seconds
+          fastestInterval: 5000,
+          useSignificantChanges: false,
+        }
+      );
+    };
+
+    watchPosition();
+
+    return () => {
+      // Clear watcher on unmount
+      if (locationWatcherId.current !== null) {
+        Geolocation.clearWatch(locationWatcherId.current);
+      }
+    };
+  }, [t]);
+
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.heading}>{t('adminDashboard')}</Text>
+
+      {/* Location Display */}
+      <View style={styles.locationBox}>
+        <Text style={styles.sectionTitle}>{t('currentTruckLocation')}</Text>
+        {location ? (
+          <Text style={styles.locationText}>
+            {t('latitude')}: {location.latitude.toFixed(6)}, {t('longitude')}: {location.longitude.toFixed(6)}
+          </Text>
+        ) : (
+          <Text style={styles.locationText}>{t('locationFetching')}</Text>
+        )}
+      </View>
 
       {/* Stats Row */}
       <View style={styles.statsRow}>
@@ -209,5 +283,16 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#888',
     marginTop: 4,
+  },
+  locationBox: {
+    backgroundColor: '#fff',
+    padding: 16,
+    borderRadius: 10,
+    elevation: 2,
+    marginBottom: 16,
+  },
+  locationText: {
+    fontSize: 16,
+    color: '#333',
   },
 });
