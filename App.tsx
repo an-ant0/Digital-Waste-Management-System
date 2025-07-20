@@ -1,4 +1,3 @@
-// Must be at the very top
 import 'react-native-gesture-handler';
 import 'react-native-reanimated';
 import React from 'react';
@@ -96,6 +95,16 @@ function DrawerRoutes({
           component={AdminCustomPickupScreen}
           options={{ drawerLabel: t('Custom Pickup Requests') }}
         />
+         <Drawer.Screen
+          name="AdminProfile"
+          component={AdminProfileScreen}
+          options={{ drawerLabel: t('Profile') }}
+        />
+        <Drawer.Screen
+          name="AdminWasteHistory"
+          component={AdminWasteHistoryScreen}
+          options={{ drawerLabel: t('Waste History') }}
+        />
       </Drawer.Navigator>
     );
   }
@@ -173,7 +182,7 @@ export default function App() {
             <Stack.Screen name="ReportHistory" component={HistoryScreen} options={{ headerShown: true }} />
             <Stack.Screen name="CustomPickup" component={CustomPickupScreen} />
             <Stack.Screen name="AdminCustomPickup" component={AdminCustomPickupScreen} options={{ headerShown: true }} />
-            <Stack.Screen name="TruckManagement" component={TruckManagementScreen} />
+            <Stack.Screen name="TruckManagement" component={TruckManagementScreen} /> 
             <Stack.Screen name="TruckLocation" component={TruckLocationScreen} />
             <Stack.Screen name="Badges" component={BadgesScreen} />
             <Stack.Screen name="Leaderboard" component={LeaderboardScreen} />

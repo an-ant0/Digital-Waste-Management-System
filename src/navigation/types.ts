@@ -41,15 +41,16 @@ export type RootStackParamList = {
   Signup4: Signup4Params;
 
   // Main user/admin entry
-  Home: { userId: string; role: 'user' | 'admin'; userName: string };
+  // Home now takes optional parameters for userId, role, and userName
+  Home: { userId?: string; role?: 'user' | 'admin'; userName?: string };
 
   // User Screens
   Profile: { userId: string };
   Rewards: undefined;
   RewardHistory: undefined;
-  ReportWaste: undefined;
+  ReportWaste: undefined; // Defined here for direct Stack navigation
   ReportHistory: undefined;
-  CustomPickup: undefined;
+  CustomPickup: undefined; // Defined here for direct Stack navigation
   Support: undefined;
   Feedback: undefined;
   Badges: undefined;
@@ -60,10 +61,10 @@ export type RootStackParamList = {
   AdminDashboard: undefined;
   AdminProfile: undefined;
   ManageUsers: undefined;
-  AdminWasteReview: undefined;
+  AdminWasteReview: undefined; // Defined here for direct Stack navigation
   AdminWasteHistory: undefined;
-  AdminCustomPickup: undefined;
-  TruckManagement: undefined;
-  TruckLocation: undefined;
-  PointsRedemption: undefined;
+  AdminCustomPickup: undefined; // Defined here for direct Stack navigation
+  TruckManagement: undefined; // Defined here for direct Stack navigation
+  TruckLocation: undefined; // Defined here for direct Stack navigation
+  PointsRedemption: undefined; // Defined here for direct Stack navigation
 };
