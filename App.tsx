@@ -52,7 +52,7 @@ function DrawerRoutes({
   initialParams,
 }: {
   role: 'admin' | 'user';
-  initialParams?: any;
+  initialParams?: any; // Consider making this more specific if possible
 }) {
   const { t } = useTranslation();
 
@@ -114,27 +114,27 @@ function DrawerRoutes({
         name="Home"
         component={HomeScreen}
         initialParams={initialParams}
-        options={{ drawerLabel: t('Home') }}
+        options={{ drawerLabel: t('home') }}
       />
       <Drawer.Screen
         name="ReportWaste"
         component={ReportWaste}
-        options={{ drawerLabel: t('Report Waste') }}
+        options={{ drawerLabel: t('reportWaste') }}
       />
       <Drawer.Screen
         name="CustomPickup"
         component={CustomPickupScreen}
-        options={{ drawerLabel: t('Custom Pickup') }}
+        options={{ drawerLabel: t('customPickup') }}
       />
       <Drawer.Screen
         name="Rewards"
         component={RewardsScreen}
-        options={{ drawerLabel: t('Rewards') }}
+        options={{ drawerLabel: t('rewards') }}
       />
       <Drawer.Screen
         name="Support"
         component={SupportScreen}
-        options={{ drawerLabel: t('Support') }}
+        options={{ drawerLabel: t('support') }}
       />
     </Drawer.Navigator>
   );
@@ -142,6 +142,8 @@ function DrawerRoutes({
 
 type DrawerWrapperProps = {
   route: RouteProp<RootStackParamList, 'Home'>;
+  // This navigation prop specifically refers to the NativeStackNavigationProp of the 'Home' screen within the main Stack.
+  // It is correct for navigating the stack, but not for drawer actions.
   navigation: NativeStackNavigationProp<RootStackParamList, 'Home'>;
 };
 
@@ -171,21 +173,26 @@ export default function App() {
             <Stack.Screen name="Signup3" component={SignupScreen3} />
             <Stack.Screen name="Signup4" component={SignupScreen4} />
             <Stack.Screen name="Home" component={DrawerRoutesWrapper} />
-            <Stack.Screen name="Profile" component={ProfileScreen} options={{ headerShown: true }} />
-            <Stack.Screen name="AdminProfile" component={AdminProfileScreen} options={{ headerShown: true }} />
-            <Stack.Screen name="RewardHistory" component={RewardHistoryScreen} options={{ headerShown: true }} />
-            <Stack.Screen name="PointsRedemption" component={PointsRedemptionScreen} options={{ headerShown: true }} />
-            <Stack.Screen name="ReportWaste" component={ReportWaste} />
+            
+            {/* Removed standalone Stack.Screens that are now inside the Drawer */}
+            {/* <Stack.Screen name="ReportWaste" component={ReportWaste} /> */}
+            {/* <Stack.Screen name="CustomPickup" component={CustomPickupScreen} /> */}
+            {/* <Stack.Screen name="TruckManagement" component={TruckManagementScreen} /> */}
+            {/* <Stack.Screen name="TruckLocation" component={TruckLocationScreen} /> */}
+            {/* <Stack.Screen name="Badges" component={BadgesScreen} /> */}
+            {/* <Stack.Screen name="Leaderboard" component={LeaderboardScreen} /> */}
+            {/* <Stack.Screen name="Feedback" component={FeedbackScreen} options={{ headerShown: true }} /> */}
+            {/* <Stack.Screen name="ReportHistory" component={HistoryScreen} options={{ headerShown: true }} /> */}
+            {/* <Stack.Screen name="Profile" component={ProfileScreen} options={{ headerShown: true }} /> */}
+            {/* <Stack.Screen name="RewardHistory" component={RewardHistoryScreen} options={{ headerShown: true }} /> */}
+
+
+            {/* Screens that are still direct Stack.Screens (e.g., if they need a distinct header or are accessed outside the drawer flow) */}
             <Stack.Screen name="AdminWasteReview" component={AdminWasteReviewScreen} options={{ headerShown: true }} />
             <Stack.Screen name="AdminWasteHistory" component={AdminWasteHistoryScreen} options={{ headerShown: true }} />
-            <Stack.Screen name="ReportHistory" component={HistoryScreen} options={{ headerShown: true }} />
-            <Stack.Screen name="CustomPickup" component={CustomPickupScreen} />
+            {/* PointsRedemption is also in AdminDrawer, so this might be redundant if it's only accessed via drawer */}
+            <Stack.Screen name="PointsRedemption" component={PointsRedemptionScreen} options={{ headerShown: true }} />
             <Stack.Screen name="AdminCustomPickup" component={AdminCustomPickupScreen} options={{ headerShown: true }} />
-            <Stack.Screen name="TruckManagement" component={TruckManagementScreen} /> 
-            <Stack.Screen name="TruckLocation" component={TruckLocationScreen} />
-            <Stack.Screen name="Badges" component={BadgesScreen} />
-            <Stack.Screen name="Leaderboard" component={LeaderboardScreen} />
-            <Stack.Screen name="Feedback" component={FeedbackScreen} options={{ headerShown: true }} />
           </Stack.Navigator>
         </NavigationContainer>
       </I18nextProvider>

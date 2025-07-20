@@ -32,7 +32,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
     setLoading(true);
 
     try {
-      const API_URL = 'http://192.168.1.130:5000/api/users/login';
+      const API_URL = 'http://192.168.1.76:5000/api/users/login';
 
       const response = await fetch(API_URL, {
         method: 'POST',

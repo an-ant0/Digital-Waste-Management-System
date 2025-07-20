@@ -28,7 +28,7 @@ const SignupScreen4: React.FC<Props> = ({ navigation, route }) => {
     const allSignupData = route.params;
 
     try {
-      const API_URL = 'http://192.168.1.130:5000/api/users/register';
+      const API_URL = 'http://192.168.1.76:5000/api/users/register';
 
       const response = await fetch(API_URL, {
         method: 'POST',
