@@ -54,7 +54,8 @@ const HomeScreen: React.FC = () => {
         <TouchableOpacity
           style={{ marginLeft: 16 }}
           onPress={() => {
-            navigation.getParent()?.openDrawer();
+            // Assert the type of the parent navigation to DrawerNavigationProp
+            (navigation.getParent() as DrawerNavigationProp<RootStackParamList>)?.openDrawer();
           }}
         >
           <Ionicons name="menu-outline" size={28} color="#333" />

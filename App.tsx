@@ -14,7 +14,6 @@ import { I18nextProvider, useTranslation } from 'react-i18next';
 import i18n from './src/i18n';
 import { RootStackParamList } from './src/navigation/types';
 
-// Screen Imports
 import SplashScreen from './src/userscreens/SplashScreen';
 import LanguageSelection from './src/userscreens/LanguageSelection';
 import SelectionScreen from './src/common/SelectionScreen';

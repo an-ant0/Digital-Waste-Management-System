@@ -1,4 +1,3 @@
-// Shared user address details
 type AddressInfo = {
   firstName: string;
   middleName: string;
@@ -8,7 +7,6 @@ type AddressInfo = {
   localityName: string;
 };
 
-// Signup step-by-step details
 type Signup2Params = AddressInfo;
 
 type Signup3Params = Signup2Params & {
@@ -25,46 +23,39 @@ type Signup4Params = Signup3Params & {
   password: string;
 };
 
-// Main Navigation Type
 export type RootStackParamList = {
-  // Onboarding & Auth
   Splash: undefined;
   LanguageSelection: undefined;
   Selection: undefined;
   UserLogin: undefined;
   AdminLogin: undefined;
 
-  // Signup flow
   Signup1: undefined;
   Signup2: Signup2Params;
   Signup3: Signup3Params;
   Signup4: Signup4Params;
 
-  // Main user/admin entry
-  // Home now takes optional parameters for userId, role, and userName
   Home: { userId?: string; role?: 'user' | 'admin'; userName?: string };
 
-  // User Screens
   Profile: { userId: string };
   Rewards: undefined;
   RewardHistory: undefined;
-  ReportWaste: undefined; // Defined here for direct Stack navigation
+  ReportWaste: undefined;
   ReportHistory: undefined;
-  CustomPickup: undefined; // Defined here for direct Stack navigation
+  CustomPickup: undefined;
   Support: undefined;
   Feedback: undefined;
   Badges: undefined;
   Leaderboard: undefined;
   RedeemedPoints: { userId: string };
 
-  // Admin Screens
   AdminDashboard: undefined;
   AdminProfile: undefined;
   ManageUsers: undefined;
-  AdminWasteReview: undefined; // Defined here for direct Stack navigation
+  AdminWasteReview: undefined;
   AdminWasteHistory: undefined;
-  AdminCustomPickup: undefined; // Defined here for direct Stack navigation
-  TruckManagement: undefined; // Defined here for direct Stack navigation
-  TruckLocation: undefined; // Defined here for direct Stack navigation
-  PointsRedemption: undefined; // Defined here for direct Stack navigation
+  AdminCustomPickup: undefined;
+  TruckManagement: undefined;
+  TruckLocation: undefined;
+  PointsRedemption: undefined;
 };

@@ -71,7 +71,6 @@ const AdminLoginScreen: React.FC = () => {
             keyboardType="default"
             returnKeyType="next"
             onSubmitEditing={() => {
-              // Focus password input if you want (requires ref)
             }}
           />
 
