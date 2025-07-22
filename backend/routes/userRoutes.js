@@ -1,4 +1,3 @@
-// backend/routes/userRoutes.js
 const express = require('express');
 const router = express.Router();
 const {
@@ -6,17 +5,17 @@ const {
   loginUser,
   getUserProfile,
   updateUserProfile,
+  getAllUsers,
+  updateUserBlockStatus,
 } = require('../controllers/userController');
 
-// User Authentication Routes
 router.post('/register', registerUser);
 router.post('/login', loginUser);
 
-// User Profile Routes
-// GET user profile by ID
 router.get('/profile/:id', getUserProfile);
-
-// PUT update user profile by ID
 router.put('/profile/:id', updateUserProfile);
+
+router.get('/all', getAllUsers);
+router.put('/:id/block', updateUserBlockStatus);
 
 module.exports = router;

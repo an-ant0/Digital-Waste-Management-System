@@ -42,7 +42,8 @@ export type RootStackParamList = {
   RewardHistory: undefined;
   ReportWaste: undefined;
   ReportHistory: undefined;
-  CustomPickup: undefined;
+  CustomPickup: { userId?: string; userName?: string; userPhone?: string; userEmail?: string } | undefined; // Add optional params for CustomPickup
+
   Support: undefined;
   Feedback: undefined;
   Badges: undefined;
@@ -57,5 +58,6 @@ export type RootStackParamList = {
   AdminCustomPickup: undefined;
   TruckManagement: undefined;
   TruckLocation: undefined;
+  TruckLiveLocation: undefined;
   PointsRedemption: undefined;
 };

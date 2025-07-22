@@ -68,6 +68,10 @@ const userSchema = mongoose.Schema(
       enum: ['user', 'admin'],
       default: 'user',
     },
+    isBlocked: { // <--- ADD THIS FIELD
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

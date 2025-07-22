@@ -1,6 +1,6 @@
-const asyncHandler = require('express-async-handler'); // Middleware to catch errors in async routes
-const User = require('../models/User'); // User model
-const bcrypt = require('bcryptjs'); // For password hashing/comparison
+const asyncHandler = require('express-async-handler');
+const User = require('../models/User'); 
+const bcrypt = require('bcryptjs'); 
 
 // @desc    Register a new user
 // @route   POST /api/users/register
@@ -22,7 +22,6 @@ const registerUser = asyncHandler(async (req, res) => {
     password,
   } = req.body;
 
-  // Validate required fields
   if (
     !firstName ||
     !lastName ||
@@ -40,7 +39,6 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new Error('Please enter all required fields.');
   }
 
-  // Check if user exists with same email, phone, or ID number
   const userExists = await User.findOne({
     $or: [{ email }, { phone }, { idNumber }],
   });
@@ -50,7 +48,6 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new Error('User with this email, phone, or ID number already exists.');
   }
 
-  // Create user (password hashing done by model pre-save middleware)
   const user = await User.create({
     firstName,
     middleName,
@@ -75,7 +72,6 @@ const registerUser = asyncHandler(async (req, res) => {
       email: user.email,
       phone: user.phone,
       message: 'User registered successfully!',
-      // Optionally generate and send JWT token here
     });
   } else {
     res.status(400);
@@ -108,14 +104,13 @@ const loginUser = asyncHandler(async (req, res) => {
       homeNumber: user.homeNumber,
       wardNumber: user.wardNumber,
       localityName: user.localityName,
-      profilePic: user.profilePic,
-      role: user.role,
       message: 'Logged in successfully!',
-      // Optionally send JWT token here
+      role: user.role, // Include role in login response
+      // token: generateToken(user._id), // If using JWT
     });
   } else {
     res.status(401);
-    throw new Error('Invalid credentials');
+    throw new Error('Invalid credentials.');
   }
 });
 
@@ -124,28 +119,13 @@ const loginUser = asyncHandler(async (req, res) => {
 // @access  Public (should be Private with JWT in production)
 const getUserProfile = asyncHandler(async (req, res) => {
   const userId = req.params.id;
-
-  const user = await User.findById(userId).select('-password');
+  const user = await User.findById(userId).select('-password'); // Exclude password
 
   if (user) {
-    res.json({
-      _id: user._id,
-      firstName: user.firstName,
-      middleName: user.middleName,
-      lastName: user.lastName,
-      homeNumber: user.homeNumber,
-      wardNumber: user.wardNumber,
-      localityName: user.localityName,
-      profilePic: user.profilePic,
-      phone: user.phone,
-      email: user.email,
-      idType: user.idType,
-      idNumber: user.idNumber,
-      idPhoto: user.idPhoto,
-    });
+    res.json(user);
   } else {
     res.status(404);
-    throw new Error('User not found');
+    throw new Error('User not found.');
   }
 });
 
@@ -189,9 +169,54 @@ const updateUserProfile = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc    Get all users (for admin)
+// @route   GET /api/users/all
+// @access  Private (Admin only) - authentication middleware would be needed here
+const getAllUsers = asyncHandler(async (req, res) => {
+  const users = await User.find({}).select('-password'); // Fetch all users, exclude passwords
+  res.json(users);
+});
+
+const updateUserBlockStatus = asyncHandler(async (req, res) => {
+  const userId = req.params.id;
+  const { isBlocked } = req.body; // Expecting { isBlocked: true/false }
+
+  if (typeof isBlocked !== 'boolean') {
+    res.status(400);
+    throw new Error('Invalid value for isBlocked. Must be true or false.');
+  }
+
+  const user = await User.findById(userId);
+
+  if (!user) {
+    res.status(404);
+    throw new Error('User not found.');
+  }
+
+  // Prevent blocking/unblocking an admin user (optional, but good practice)
+  if (user.role === 'admin' && isBlocked) {
+    res.status(403);
+    throw new Error('Cannot block an admin user.');
+  }
+
+  user.isBlocked = isBlocked;
+  const updatedUser = await user.save();
+
+  res.json({
+    _id: updatedUser._id,
+    firstName: updatedUser.firstName,
+    lastName: updatedUser.lastName,
+    email: updatedUser.email,
+    isBlocked: updatedUser.isBlocked,
+    message: `User ${updatedUser.isBlocked ? 'blocked' : 'unblocked'} successfully!`,
+  });
+});
+
 module.exports = {
   registerUser,
   loginUser,
   getUserProfile,
   updateUserProfile,
+  getAllUsers, 
+  updateUserBlockStatus,
 };
