@@ -14,15 +14,19 @@ import {
   RouteProp,
 } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { DrawerNavigationProp } from '@react-navigation/drawer';
+import { StackNavigationProp } from '@react-navigation/stack'; // Keep for other stack-related types if needed, but not for HomeScreenNavigationProp
+import { DrawerNavigationProp } from '@react-navigation/drawer'; // This is correct and needed
 import { RootStackParamList } from '../navigation/types';
 
-// Define the type for the Home screen's route props
+// Define the type for the Home screen's route props (this was correct)
 type HomeScreenRouteProp = RouteProp<RootStackParamList, 'Home'>;
-type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Home'>;
+
+// CORRECTED: The navigation prop for HomeScreen is a DrawerNavigationProp,
+// because HomeScreen is a direct child of the Drawer.Navigator.
+type HomeScreenNavigationProp = DrawerNavigationProp<RootStackParamList, 'Home'>;
 
 const HomeScreen: React.FC = () => {
+  // Use the corrected type for the useNavigation hook
   const navigation = useNavigation<HomeScreenNavigationProp>();
   const route = useRoute<HomeScreenRouteProp>();
 
@@ -41,6 +45,8 @@ const HomeScreen: React.FC = () => {
           style={{ marginRight: 16 }}
           onPress={() => {
             if (userId) {
+              // This navigation.navigate is for the Stack Navigator, which is fine
+              // because navigation is still implicitly capable of stack actions.
               navigation.navigate('Profile', { userId });
             } else {
               Alert.alert('Error', 'User ID not available for profile.');
@@ -54,8 +60,9 @@ const HomeScreen: React.FC = () => {
         <TouchableOpacity
           style={{ marginLeft: 16 }}
           onPress={() => {
-            // Assert the type of the parent navigation to DrawerNavigationProp
-            (navigation.getParent() as DrawerNavigationProp<RootStackParamList>)?.openDrawer();
+            // CORRECTED: Now you can directly call openDrawer() on the 'navigation' object
+            // because it is correctly typed as DrawerNavigationProp.
+            navigation.openDrawer();
           }}
         >
           <Ionicons name="menu-outline" size={28} color="#333" />
