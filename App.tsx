@@ -14,23 +14,23 @@ import { I18nextProvider, useTranslation } from 'react-i18next';
 import i18n from './src/i18n';
 import { RootStackParamList } from './src/navigation/types';
 
-import SplashScreen from './src/userscreens/SplashScreen';
-import LanguageSelection from './src/userscreens/LanguageSelection';
+import SplashScreen from './src/common/SplashScreen';
+import LanguageSelection from './src/common/LanguageSelection';
 import SelectionScreen from './src/common/SelectionScreen';
-import AdminLogin from './src/adminscreens/LoginScreen';
-import UserLogin from './src/userscreens/Auth/LoginScreen';
+import AdminLogin from './src/adminscreens/AdminLoginScreen';
+import UserLogin from './src/userscreens/Auth/UserLoginScreen';
 import SignupScreen1 from './src/userscreens/Auth/SignupScreen1';
 import SignupScreen2 from './src/userscreens/Auth/SignupScreen2';
 import SignupScreen3 from './src/userscreens/Auth/SignupScreen3';
 import SignupScreen4 from './src/userscreens/Auth/SignupScreen4';
-import HomeScreen from './src/userscreens/HomeScreen';
+import HomeScreen from './src/userscreens/UserDashboardScreen';
 import AdminDashboard from './src/adminscreens/AdminDashboard';
 import ManageUsersScreen from './src/adminscreens/ManageUsersScreen';
 import ReportWaste from './src/userscreens/ReportWasteScreen';
 import AdminWasteReviewScreen from './src/adminscreens/AdminWasteReviewScreen';
-import AdminWasteHistoryScreen from './src/adminscreens/AdminWasteHistoryScreen';
+import AdminWasteHistoryScreen from './src/adminscreens/AdminWasteReviewHistoryScreen';
 import CustomPickupScreen from './src/userscreens/CustomPickupScreen';
-import AdminCustomPickupScreen from './src/adminscreens/AdminCustomPickupScreen';
+import AdminCustomPickupScreen from './src/adminscreens/ManageCustomPickup';
 import TruckManagementScreen from './src/adminscreens/TruckManagementScreen';
 import TruckLocationScreen from './src/adminscreens/TruckLocationScreen';
 import RewardsScreen from './src/userscreens/RewardsScreen';
@@ -51,7 +51,7 @@ function DrawerRoutes({
   role,
   initialParams,
 }: {
-  role: 'admin' | 'user';
+  role: 'admin' | 'user' | 'truckdriver';
   initialParams?: any;
 }) {
   const { t } = useTranslation();
@@ -94,7 +94,7 @@ function DrawerRoutes({
           component={AdminCustomPickupScreen}
           options={{ drawerLabel: t('Custom Pickup Requests') }}
         />
-         <Drawer.Screen
+        <Drawer.Screen
           name="AdminProfile"
           component={AdminProfileScreen}
           options={{ drawerLabel: t('Profile') }}
@@ -141,12 +141,19 @@ function DrawerRoutes({
 }
 
 type DrawerWrapperProps = {
-  route: RouteProp<RootStackParamList, 'Home'>;
-  navigation: NativeStackNavigationProp<RootStackParamList, 'Home'>;
+  route: RouteProp<RootStackParamList, 'UserDashboard'>;
+  navigation: NativeStackNavigationProp<RootStackParamList, 'UserDashboard'>;
 };
 
 const DrawerRoutesWrapper: React.FC<DrawerWrapperProps> = ({ route }) => {
-  const { role = 'user', userId = '', userName = '' } = route.params || {};
+  const {
+    role: roleParam = 'user',
+    userId = '',
+    userName = '',
+  } = route.params || {};
+
+  const role = roleParam as 'user' | 'admin' | 'truckdriver';
+
   return (
     <DrawerRoutes
       role={role}
@@ -170,7 +177,7 @@ export default function App() {
             <Stack.Screen name="Signup2" component={SignupScreen2} />
             <Stack.Screen name="Signup3" component={SignupScreen3} />
             <Stack.Screen name="Signup4" component={SignupScreen4} />
-            <Stack.Screen name="Home" component={DrawerRoutesWrapper} />
+            <Stack.Screen name="UserDashboard" component={DrawerRoutesWrapper} />
             <Stack.Screen name="Profile" component={ProfileScreen} options={{ headerShown: true }} />
             <Stack.Screen name="AdminProfile" component={AdminProfileScreen} options={{ headerShown: true }} />
             <Stack.Screen name="RewardHistory" component={RewardHistoryScreen} options={{ headerShown: true }} />
@@ -181,7 +188,7 @@ export default function App() {
             <Stack.Screen name="ReportHistory" component={HistoryScreen} options={{ headerShown: true }} />
             <Stack.Screen name="CustomPickup" component={CustomPickupScreen} />
             <Stack.Screen name="AdminCustomPickup" component={AdminCustomPickupScreen} options={{ headerShown: true }} />
-            <Stack.Screen name="TruckManagement" component={TruckManagementScreen} /> 
+            <Stack.Screen name="TruckManagement" component={TruckManagementScreen} />
             <Stack.Screen name="TruckLocation" component={TruckLocationScreen} />
             <Stack.Screen name="Badges" component={BadgesScreen} />
             <Stack.Screen name="Leaderboard" component={LeaderboardScreen} />

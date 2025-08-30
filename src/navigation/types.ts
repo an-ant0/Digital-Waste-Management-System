@@ -23,6 +23,14 @@ type Signup4Params = Signup3Params & {
   password: string;
 };
 
+// New shared type for user authentication parameters
+export type UserRole = 'user' | 'admin' | 'truckdriver' | undefined;
+export type AuthParams = {
+  userId: string;
+  role: UserRole;
+  userName?: string;
+};
+
 export type RootStackParamList = {
   Splash: undefined;
   LanguageSelection: undefined;
@@ -35,11 +43,10 @@ export type RootStackParamList = {
   Signup3: Signup3Params;
   Signup4: Signup4Params;
 
-  Home: { userId?: string; role?: 'user' | 'admin'; userName?: string };
-
+  UserDashboard: AuthParams;
   Profile: { userId: string };
   Rewards: undefined;
-  RewardHistory: undefined;
+  RewardHistory: { userId: string };
   ReportWaste: undefined;
   ReportHistory: undefined;
   CustomPickup: undefined;
@@ -49,8 +56,8 @@ export type RootStackParamList = {
   Leaderboard: undefined;
   RedeemedPoints: { userId: string };
 
-  AdminDashboard: undefined;
-  AdminProfile: undefined;
+  AdminDashboard: AuthParams;
+  AdminProfile: { userId: string };
   ManageUsers: undefined;
   AdminWasteReview: undefined;
   AdminWasteHistory: undefined;
@@ -58,4 +65,6 @@ export type RootStackParamList = {
   TruckManagement: undefined;
   TruckLocation: undefined;
   PointsRedemption: undefined;
+  AdminFeedback: undefined;
+  TruckDriver: AuthParams;
 };

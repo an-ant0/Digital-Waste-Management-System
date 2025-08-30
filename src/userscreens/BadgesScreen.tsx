@@ -12,7 +12,6 @@ const badgeColors: { [key: string]: string } = {
 const BadgesScreen: React.FC = () => {
   const { t } = useTranslation();
 
-  // Replace this with actual user rank from your state or props
   const userRank = 'silver';
 
   const badges = [

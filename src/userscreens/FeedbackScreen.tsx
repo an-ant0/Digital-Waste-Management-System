@@ -8,13 +8,16 @@ import {
   StyleSheet,
   Alert,
   ScrollView,
+  ActivityIndicator, // Import ActivityIndicator for loading state
 } from 'react-native';
-
 import { useNavigation } from '@react-navigation/native';
+import { API_URL } from '../config';
+
 
 const FeedbackScreen: React.FC = () => {
   const { t } = useTranslation();
   const [feedback, setFeedback] = useState('');
+  const [loading, setLoading] = useState(false); // New state for loading indicator
 
   const navigation = useNavigation();
 
@@ -22,14 +25,46 @@ const FeedbackScreen: React.FC = () => {
     navigation.setOptions({ title: t('Feedback') });
   }, [navigation, t]);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => { // Make handleSubmit async
     if (feedback.trim().length < 10) {
       Alert.alert(t('validationTitle'), t('feedbackTooShort'));
       return;
     }
 
-    Alert.alert(t('feedbackSentTitle'), t('thankYouFeedback'));
-    setFeedback('');
+    setLoading(true); // Set loading to true when submission starts
+
+    try {
+      const response = await fetch(`${API_URL}/api/feedback`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          // You might include an Authorization header here if your API requires a token
+          // 'Authorization': `Bearer ${yourAuthToken}`
+        },
+        body: JSON.stringify({
+          feedbackText: feedback,
+          // If you have userId available from authentication context, send it here:
+          // userId: 'someUserIdFromContext',
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        Alert.alert(t('feedbackSentTitle'), data.message || t('thankYouFeedback'));
+        setFeedback(''); // Clear feedback on success
+      } else {
+        // Handle API errors (e.g., server validation errors)
+        Alert.alert('Submission Failed', data.message || 'An unexpected error occurred.');
+        console.error('Backend Error:', data);
+      }
+    } catch (error) {
+      // Handle network errors
+      console.error('Network or other error during feedback submission:', error);
+      Alert.alert('Error', 'Could not submit feedback. Please check your network connection.');
+    } finally {
+      setLoading(false); // Always set loading to false when submission finishes
+    }
   };
 
   return (
@@ -43,13 +78,18 @@ const FeedbackScreen: React.FC = () => {
         numberOfLines={5}
         value={feedback}
         onChangeText={setFeedback}
+        editable={!loading} // Disable input while loading
       />
       <TouchableOpacity
-        style={[styles.button, feedback.trim().length < 10 && styles.buttonDisabled]}
+        style={[styles.button, (feedback.trim().length < 10 || loading) && styles.buttonDisabled]}
         onPress={handleSubmit}
-        disabled={feedback.trim().length < 10}
+        disabled={feedback.trim().length < 10 || loading} // Disable button while loading
       >
-        <Text style={styles.buttonText}>{t('submitFeedback')}</Text>
+        {loading ? (
+          <ActivityIndicator color="#fff" /> // Show loader inside button
+        ) : (
+          <Text style={styles.buttonText}>{t('submitFeedback')}</Text>
+        )}
       </TouchableOpacity>
     </ScrollView>
   );

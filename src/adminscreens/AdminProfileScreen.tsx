@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, Alert } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation, StackActions } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 
 const AdminProfileScreen: React.FC = () => {
@@ -19,7 +19,7 @@ const AdminProfileScreen: React.FC = () => {
   const handleLogout = async () => {
     await AsyncStorage.clear(); // clear session/storage
     Alert.alert(t('logout'), t('logoutSuccess'));
-    navigation.replace('AdminLogin'); // adjust screen name accordingly
+    navigation.dispatch(StackActions.replace('AdminLogin')); // adjust screen name accordingly
   };
 
   return (

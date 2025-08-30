@@ -196,6 +196,13 @@ const resources = {
       faq3: "Q: Can I track the garbage truck or see collection schedules?\nA: Yes, the app provides real-time truck tracking and notifies you of garbage collection schedules via SMS and app alerts.",
       sendFeedback: "Send Feedback",
       customPickup: "Custom Pickup",
+      "Login Type": "Login Type",          // English
+      "User": "User",
+      "Admin": "Admin",
+      "Truck Driver": "Truck Driver",
+      "userLogin": "User Login",
+      "adminLogin": "Admin Login",
+      "truckDriverLogin": "Truck Driver Login"
     }
   },
   ne: {
@@ -391,6 +398,13 @@ const resources = {
       faq3: "प्रश्न: म फोहोर ट्रक ट्र्याक गर्न वा सङ्कलन तालिका हेर्न सक्छु?\nउत्तर: हो, एपले वास्तविक-समय ट्रक ट्र्याकिङ्ग प्रदान गर्दछ र SMS र एप सूचनाहरू मार्फत फोहोर सङ्कलन तालिका जानकारी दिन्छ।",
       sendFeedback: "प्रतिक्रिया पठाउनुहोस्",
       customPickup: "अनुकूल कचरा उठाउने",
+      "Login Type": "लगइन प्रकार",
+      "User": "प्रयोगकर्ता",
+      "Admin": "प्रशासक",
+      "Truck Driver": "ट्रक चालक",
+      "userLogin": "प्रयोगकर्ता लगइन",
+      "adminLogin": "प्रशासक लगइन",
+      "truckDriverLogin": "ट्रक चालक लगइन"
     }
   }
 } as const; // Add 'as const' for better type inference

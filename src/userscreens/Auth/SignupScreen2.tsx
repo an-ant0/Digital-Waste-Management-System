@@ -114,6 +114,7 @@ const SignupScreen2: React.FC<Props> = ({ navigation, route }) => {
           style={styles.input}
           placeholder="Identification Number"
           value={idNumber}
+          keyboardType="number-pad"
           onChangeText={setIdNumber}
         />
       </View>

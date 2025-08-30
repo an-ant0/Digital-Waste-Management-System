@@ -7,27 +7,27 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
-import {
-  useNavigation,
-  NavigationProp,
-  useRoute,
-  RouteProp,
-} from '@react-navigation/native';
+import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
-import { RootStackParamList } from '../navigation/types';
+import { RootStackParamList } from '../navigation/types'; // Assuming this path is correct
 
-// Define the type for the Home screen's route props
-type HomeScreenRouteProp = RouteProp<RootStackParamList, 'Home'>;
-type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Home'>;
+type UserDashboardScreenRouteProp = RouteProp<
+  RootStackParamList,
+  'UserDashboard'
+>;
 
-const HomeScreen: React.FC = () => {
-  const navigation = useNavigation<HomeScreenNavigationProp>();
-  const route = useRoute<HomeScreenRouteProp>();
+type UserDashboardScreenNavigationProp = DrawerNavigationProp<
+  RootStackParamList,
+  'UserDashboard'
+>;
 
-  // Debug log for route params
-  console.log('HomeScreen route params:', route.params);
+const UserDashboardScreen: React.FC = () => {
+  const navigation = useNavigation<UserDashboardScreenNavigationProp>();
+  const route = useRoute<UserDashboardScreenRouteProp>();
+
+  console.log('UserDashboardScreen route params:', route.params);
 
   const userId = route.params?.userId;
   const role = route.params?.role;
@@ -35,15 +35,15 @@ const HomeScreen: React.FC = () => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitle: 'Home',
+      headerTitle: 'Dashboard',
       headerRight: () => (
         <TouchableOpacity
           style={{ marginRight: 16 }}
           onPress={() => {
             if (userId) {
-              navigation.navigate('Profile', { userId });
+              navigation.navigate('Profile', { userId }); // Keep it simple
             } else {
-              Alert.alert('Error', 'User ID not available for profile.');
+              Alert.alert('Error', 'User ID not available.');
             }
           }}
         >
@@ -54,8 +54,7 @@ const HomeScreen: React.FC = () => {
         <TouchableOpacity
           style={{ marginLeft: 16 }}
           onPress={() => {
-            // Assert the type of the parent navigation to DrawerNavigationProp
-            (navigation.getParent() as DrawerNavigationProp<RootStackParamList>)?.openDrawer();
+            navigation.openDrawer();
           }}
         >
           <Ionicons name="menu-outline" size={28} color="#333" />
@@ -66,18 +65,8 @@ const HomeScreen: React.FC = () => {
 
   if (!userId) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.errorText}>
-          Error: User data not loaded. Please log in again.
-        </Text>
-        <TouchableOpacity
-          style={styles.logoutButton}
-          onPress={() =>
-            navigation.reset({ index: 0, routes: [{ name: 'UserLogin' }] })
-          }
-        >
-          <Text style={styles.logoutButtonText}>Go to Login</Text>
-        </TouchableOpacity>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>Please log in to report waste.</Text>
       </View>
     );
   }
@@ -89,29 +78,56 @@ const HomeScreen: React.FC = () => {
         <Text style={styles.userIdText}>Your User ID: {userId}</Text>
         <Text style={styles.roleText}>Your Role: {role || 'N/A'}</Text>
 
-        <Card title="Waste Reported" value="12" description="Reports you’ve submitted" />
+        <Card
+          title="Waste Reported"
+          value="12"
+          description="Reports you’ve submitted"
+        />
         <Card
           title="Verified Reported"
           value="9"
           description="Reports verified by authority"
         />
-        <Card title="Points Available" value="340" description="Your reward points" />
+        <Card
+          title="Points Available"
+          value="340"
+          description="Your reward points"
+        />
 
-        <TouchableOpacity onPress={() => navigation.navigate('RedeemedPoints', { userId })}>
-          <Card title="Redeemed Points" value="120" description="Points you’ve used" />
+        <TouchableOpacity
+          onPress={() =>
+            (
+              navigation.getParent() as StackNavigationProp<RootStackParamList>
+            )?.navigate('RedeemedPoints', { userId })
+          }
+        >
+          <Card
+            title="Redeemed Points"
+            value="120"
+            description="Points you’ve used"
+          />
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => navigation.navigate('Badges')}>
-          <Card title="Level / Badges" value="Silver" description="Your achievement level" />
+        <TouchableOpacity
+          onPress={() =>
+            (
+              navigation.getParent() as StackNavigationProp<RootStackParamList>
+            )?.navigate('Badges')
+          }
+        >
+          <Card
+            title="Level / Badges"
+            value="Silver"
+            description="Your achievement level"
+          />
         </TouchableOpacity>
       </ScrollView>
     </View>
   );
 };
 
-export default HomeScreen;
+export default UserDashboardScreen;
 
-// Reusable Card Component
 type CardProps = {
   title: string;
   value: string | number;

@@ -10,10 +10,15 @@ import {
   TextInput,
   ScrollView,
   Keyboard,
+  ActivityIndicator,
 } from 'react-native';
+import axios from 'axios';
+import { API_URL } from '../config';
 
+// Match the interface to the data returned by your backend
 interface Truck {
-  id: string;
+  _id?: string;
+  truckId: string; // This field is required by the backend
   driverName: string;
   plateNumber: string;
   route: string;
@@ -23,33 +28,40 @@ const TruckManagementScreen: React.FC = () => {
   const [trucks, setTrucks] = useState<Truck[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [editingTruck, setEditingTruck] = useState<Truck | null>(null);
+  const [truckId, setTruckId] = useState(''); // New state for truckId
   const [driverName, setDriverName] = useState('');
   const [plateNumber, setPlateNumber] = useState('');
   const [route, setRoute] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const dispatchTruckToWard = async (wardNumber: string) => {
+  // Function to fetch trucks from the backend API
+  const fetchTrucks = async () => {
+    setLoading(true);
     try {
-      await fetch('https://your-server.com/api/dispatch-truck', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ wardNumber }),
-      });
-      Alert.alert('Success', `Truck dispatched to Ward ${wardNumber}`);
-    } catch (err) {
-      Alert.alert('Error', 'Failed to dispatch truck');
+      const response = await axios.get(`${API_URL}/api/trucks`);
+      if (response.data && Array.isArray(response.data)) {
+        setTrucks(response.data);
+      } else {
+        setTrucks([]);
+        Alert.alert('Error', 'Unexpected data format from the server.');
+      }
+    } catch (err: any) {
+      console.error('Error fetching trucks:', err);
+      Alert.alert(
+        'Error',
+        `Failed to fetch trucks: ${err.message}. Please ensure the backend is running.`,
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    // Dummy data – replace with real API call
-    const dummy: Truck[] = [
-      { id: '1', driverName: 'Ram Thapa', plateNumber: 'BA 2 KHA 1234', route: 'Ward 1-5' },
-      { id: '2', driverName: 'Shyam Gurung', plateNumber: 'BA 4 PA 9876', route: 'Ward 6-10' },
-    ];
-    setTrucks(dummy);
+    fetchTrucks();
   }, []);
 
   const resetForm = () => {
+    setTruckId(''); // Reset truckId state
     setDriverName('');
     setPlateNumber('');
     setRoute('');
@@ -58,6 +70,7 @@ const TruckManagementScreen: React.FC = () => {
 
   const openEditModal = (truck: Truck) => {
     setEditingTruck(truck);
+    setTruckId(truck.truckId);
     setDriverName(truck.driverName);
     setPlateNumber(truck.plateNumber);
     setRoute(truck.route);
@@ -70,50 +83,77 @@ const TruckManagementScreen: React.FC = () => {
     Keyboard.dismiss();
   };
 
-  const handleSave = () => {
-    if (!driverName || !plateNumber || !route) {
+  const handleSave = async () => {
+    // Corrected validation to include truckId
+    if (!truckId || !driverName || !plateNumber || !route) {
       Alert.alert('All fields are required.');
       return;
     }
 
-    if (editingTruck) {
-      setTrucks(prev =>
-        prev.map(t => (t.id === editingTruck.id ? { ...editingTruck, driverName, plateNumber, route } : t))
-      );
-    } else {
-      const newTruck: Truck = {
-        id: Date.now().toString(),
-        driverName,
-        plateNumber,
-        route,
-      };
-      setTrucks(prev => [...prev, newTruck]);
-    }
+    const truckData = { truckId, driverName, plateNumber, route };
 
-    closeModal();
+    try {
+      if (editingTruck) {
+        // Corrected: Use the editingTruck's _id for PUT request
+        await axios.put(
+          `${API_URL}/api/trucks/${editingTruck._id}`,
+          truckData,
+        );
+        Alert.alert('Success', 'Truck updated successfully.');
+      } else {
+        // Use POST request for adding a new truck
+        await axios.post(`${API_URL}/api/trucks`, truckData);
+        Alert.alert('Success', 'New truck added successfully.');
+      }
+      closeModal();
+      fetchTrucks(); // Refresh the list of trucks
+    } catch (err: any) {
+      console.error('Error saving truck:', err);
+      Alert.alert('Error', `Failed to save truck: ${err.message}`);
+    }
   };
 
   const handleDelete = (id: string) => {
-    Alert.alert('Confirm Delete', 'Are you sure you want to delete this truck?', [
-      { text: 'Cancel' },
-      {
-        text: 'Delete',
-        style: 'destructive',
-        onPress: () => setTrucks(prev => prev.filter(t => t.id !== id)),
-      },
-    ]);
+    Alert.alert(
+      'Confirm Delete',
+      'Are you sure you want to delete this truck?',
+      [
+        { text: 'Cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await axios.delete(`${API_URL}/api/trucks/${id}`);
+              Alert.alert('Success', 'Truck deleted successfully.');
+              fetchTrucks();
+            } catch (err: any) {
+              console.error('Error deleting truck:', err);
+              Alert.alert('Error', `Failed to delete truck: ${err.message}`);
+            }
+          },
+        },
+      ],
+    );
   };
 
   const renderItem = ({ item }: { item: Truck }) => (
     <View style={styles.card}>
-      <Text style={styles.title}>{item.driverName}</Text>
+      <Text style={styles.title}>Truck ID: {item.truckId}</Text>
+      <Text style={styles.text}>Driver: {item.driverName}</Text>
       <Text style={styles.text}>Plate: {item.plateNumber}</Text>
       <Text style={styles.text}>Route: {item.route}</Text>
       <View style={styles.actions}>
-        <TouchableOpacity onPress={() => openEditModal(item)} style={styles.editBtn}>
+        <TouchableOpacity
+          onPress={() => openEditModal(item)}
+          style={styles.editBtn}
+        >
           <Text style={styles.btnText}>Edit</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => handleDelete(item.id)} style={styles.deleteBtn}>
+        <TouchableOpacity
+          onPress={() => handleDelete(item._id!)}
+          style={styles.deleteBtn}
+        >
           <Text style={styles.btnText}>Delete</Text>
         </TouchableOpacity>
       </View>
@@ -123,23 +163,62 @@ const TruckManagementScreen: React.FC = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Truck Management</Text>
+      {loading ? (
+        <ActivityIndicator size="large" color="#0000ff" style={{ flex: 1 }} />
+      ) : (
+        <FlatList
+          data={trucks}
+          keyExtractor={item => item._id!}
+          renderItem={renderItem}
+          contentContainerStyle={{ paddingBottom: 100 }}
+          ListEmptyComponent={
+            <View
+              style={{
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              <Text>No trucks found.</Text>
+            </View>
+          }
+        />
+      )}
 
-      <FlatList
-        data={trucks}
-        keyExtractor={item => item.id}
-        renderItem={renderItem}
-        contentContainerStyle={{ paddingBottom: 100 }}
-      />
-
-      <TouchableOpacity style={styles.addButton} onPress={() => setModalVisible(true)}>
+      <TouchableOpacity
+        style={styles.addButton}
+        onPress={() => {
+          resetForm();
+          setModalVisible(true);
+        }}
+      >
         <Text style={styles.addButtonText}>+ Add Truck</Text>
       </TouchableOpacity>
 
-      {/* Modal */}
-      <Modal visible={modalVisible} transparent animationType="slide" onRequestClose={closeModal}>
+      {/* Modal for adding/editing trucks */}
+      <Modal
+        visible={modalVisible}
+        transparent
+        animationType="slide"
+        onRequestClose={closeModal}
+      >
         <View style={styles.modalOverlay}>
-          <ScrollView style={styles.modalContent} keyboardShouldPersistTaps="handled">
-            <Text style={styles.modalHeader}>{editingTruck ? 'Edit Truck' : 'Add New Truck'}</Text>
+          <ScrollView
+            style={styles.modalContent}
+            keyboardShouldPersistTaps="handled"
+          >
+            <Text style={styles.modalHeader}>
+              {editingTruck ? 'Edit Truck' : 'Add New Truck'}
+            </Text>
+            <TextInput
+              placeholder="Truck ID (e.g., T-001)"
+              style={styles.input}
+              value={truckId}
+              onChangeText={setTruckId}
+              autoCapitalize="characters"
+              returnKeyType="next"
+              editable={!editingTruck} // Prevent editing the truckId for existing trucks
+            />
             <TextInput
               placeholder="Driver Name"
               style={styles.input}
@@ -165,9 +244,14 @@ const TruckManagementScreen: React.FC = () => {
               returnKeyType="done"
             />
             <TouchableOpacity
-              style={[styles.saveBtn, (!driverName || !plateNumber || !route) && { opacity: 0.5 }]}
+              style={[
+                styles.saveBtn,
+                (!truckId || !driverName || !plateNumber || !route) && {
+                  opacity: 0.5,
+                },
+              ]}
               onPress={handleSave}
-              disabled={!driverName || !plateNumber || !route}
+              disabled={!truckId || !driverName || !plateNumber || !route}
             >
               <Text style={styles.btnText}>Save</Text>
             </TouchableOpacity>

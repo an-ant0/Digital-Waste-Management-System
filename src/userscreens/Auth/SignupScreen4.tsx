@@ -10,10 +10,13 @@ import {
 import CheckBox from '@react-native-community/checkbox';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../navigation/types';
+import { API_URL } from '../../config';
+import { useTranslation } from 'react-i18next';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Signup4'>;
 
 const SignupScreen4: React.FC<Props> = ({ navigation, route }) => {
+  const { t } = useTranslation();
   const [agree, setAgree] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -25,15 +28,39 @@ const SignupScreen4: React.FC<Props> = ({ navigation, route }) => {
 
     setLoading(true);
 
-    const allSignupData = route.params;
-
     try {
-      const API_URL = 'http://192.168.1.130:5000/api/users/register';
+      const formData = new FormData();
 
-      const response = await fetch(API_URL, {
+      // Append all previous data except images
+      Object.entries(route.params).forEach(([key, value]) => {
+        if (value && key !== 'profilePic' && key !== 'idPhoto') {
+          formData.append(key, value as string);
+        }
+      });
+
+      // Append images as files
+      if (route.params.profilePic) {
+        formData.append('profilePic', {
+          uri: route.params.profilePic,
+          type: 'image/jpeg', // adjust if PNG
+          name: 'profile.jpg',
+        } as any);
+      }
+
+      if (route.params.idPhoto) {
+        formData.append('idPhoto', {
+          uri: route.params.idPhoto,
+          type: 'image/jpeg', // adjust if PNG
+          name: 'id.jpg',
+        } as any);
+      }
+
+      const response = await fetch(`${API_URL}/api/users/register`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(allSignupData),
+        body: formData,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       });
 
       const data = await response.json();
@@ -46,8 +73,8 @@ const SignupScreen4: React.FC<Props> = ({ navigation, route }) => {
         console.error('Backend Error:', data);
       }
     } catch (error) {
-      console.error('Network or other error during signup:', error);
-      Alert.alert('Error', 'Could not connect to the server. Please check your internet connection or server status.');
+      console.error('Signup error:', error);
+      Alert.alert('Error', 'Network error. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -72,6 +99,7 @@ const SignupScreen4: React.FC<Props> = ({ navigation, route }) => {
           value={agree}
           onValueChange={setAgree}
           tintColors={{ true: '#007BFF', false: '#aaa' }}
+          accessibilityLabel={t('agreeTerms')}
         />
         <Text style={styles.checkboxLabel}>I agree to the terms and conditions</Text>
       </View>

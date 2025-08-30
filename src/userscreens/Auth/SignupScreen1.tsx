@@ -13,7 +13,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
-import { RootStackParamList } from '../../navigation/types'; // ✅ Use centralized types
+import { RootStackParamList } from '../../navigation/types'; 
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Signup1'>;
 
@@ -58,7 +58,6 @@ const SignupScreen1: React.FC = () => {
       <ScrollView contentContainerStyle={styles.container}>
         <Text style={styles.heading}>{t('signupStep1')}</Text>
 
-        {/* Name Section */}
         <View style={styles.sectionBox}>
           <Text style={styles.sectionTitle}>{t('name')}</Text>
           <TextInput
@@ -84,20 +83,19 @@ const SignupScreen1: React.FC = () => {
           />
         </View>
 
-        {/* Address Section */}
         <View style={styles.sectionBox}>
           <Text style={styles.sectionTitle}>{t('address')}</Text>
           <TextInput
             style={styles.input}
             placeholder={t('homeNumber') + ' *'}
-            keyboardType="default"
+            keyboardType="number-pad"
             value={homeNumber}
             onChangeText={setHomeNumber}
           />
           <TextInput
             style={styles.input}
             placeholder={t('wardNumber') + ' *'}
-            keyboardType="default"
+            keyboardType="number-pad"
             value={wardNumber}
             onChangeText={setWardNumber}
           />

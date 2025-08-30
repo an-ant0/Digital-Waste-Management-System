@@ -4,7 +4,6 @@ import {
   Text,
   StyleSheet,
   ScrollView,
-  FlatList,
   TouchableOpacity,
   Dimensions,
 } from 'react-native';
@@ -54,7 +53,6 @@ const AdminDashboard: React.FC = () => {
     <ScrollView style={styles.container}>
       <Text style={styles.heading}>{t('adminDashboard')}</Text>
 
-      {/* Stats Row */}
       <View style={styles.statsRow}>
         <View style={styles.statBox}>
           <Text style={styles.statLabel}>{t('totalUsers')}</Text>
@@ -76,7 +74,6 @@ const AdminDashboard: React.FC = () => {
         </View>
       </View>
 
-      {/* Weekly Graph */}
       <Text style={styles.sectionTitle}>{t('weeklyActivity')}</Text>
       <LineChart
         data={weeklyData}
@@ -94,7 +91,6 @@ const AdminDashboard: React.FC = () => {
         style={styles.chart}
       />
 
-      {/* Truck Status */}
       <Text style={styles.sectionTitle}>{t('truckStatus')}</Text>
       <View style={styles.truckRow}>
         <View style={styles.truckBox}>
@@ -107,18 +103,15 @@ const AdminDashboard: React.FC = () => {
         </View>
       </View>
 
-      {/* Recent Reports */}
       <Text style={styles.sectionTitle}>{t('recentReports')}</Text>
-      <FlatList
-        data={recentReports}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View style={styles.reportItem}>
+      <View>
+        {recentReports.map((item) => (
+          <View key={item.id} style={styles.reportItem}>
             <Text style={styles.reportTitle}>{item.title}</Text>
             <Text style={styles.reportDate}>{item.date}</Text>
           </View>
-        )}
-      />
+        ))}
+      </View>
     </ScrollView>
   );
 };

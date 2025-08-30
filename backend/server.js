@@ -1,29 +1,80 @@
-// backend/server.js
-const express = require('express'); // Import Express
-const dotenv = require('dotenv').config(); // Load environment variables from .env file
-const connectDB = require('./config/db'); // Import the database connection function
-const userRoutes = require('./routes/userRoutes'); // Import user routes
-const { errorHandler } = require('./middleware/errorMiddleware'); // Import custom error handling middleware
+require('dotenv').config();
 
-// Connect to MongoDB database
-connectDB();
+const express = require('express');
+const http = require('http');
+const { Server } = require('socket.io');
+const cors = require('cors');
 
-const app = express(); // Initialize Express app
+// Database connection
+const connectDB = require('./config/db');
 
-// Middleware to parse JSON bodies from incoming requests
-app.use(express.json({ limit: '50mb' })); // Increase limit for potential base64 image data
-// Middleware to parse URL-encoded bodies (for form data)
+// Import routes
+const userRoutes = require('./routes/userRoutes');
+const initializeTruckRoutes = require('./routes/truckRoutes');
+const customPickupRoutes = require('./routes/customPickupRoutes');
+const feedbackRoutes = require('./routes/feedbackRoutes');
+const wasteReportRoutes = require('./routes/wasteReportRoutes');
+const rewardRoutes = require('./routes/rewardRoutes');
+
+// Middleware
+const { errorHandler } = require('./middleware/errorMiddleware');
+
+// Initialize Express app
+const app = express();
+
+// Parse JSON and URL-encoded bodies
+app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Define API routes
-// Any request to /api/users will be handled by userRoutes
-app.use('/api/users', userRoutes);
+// CORS for Express routes
+const allowedOrigins = process.env.NODE_ENV === "production"
+  ? ["https://myfrontend.com", "https://admin.myfrontend.com"]
+  : "*";
 
-// Use custom error handling middleware (should be placed after routes)
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true,
+}));
+
+const server = http.createServer(app);
+
+const io = new Server(server, {
+  cors: {
+    origin: allowedOrigins,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  },
+});
+
+const truckRoutes = initializeTruckRoutes(io);
+
+app.use('/api/users', userRoutes);
+app.use('/api/custom-pickups', customPickupRoutes);
+app.use('/api/feedback', feedbackRoutes);
+app.use('/api/waste', wasteReportRoutes);
+app.use('/api/rewards', rewardRoutes);
+app.use('/api/trucks', truckRoutes);
+
+io.on('connection', (socket) => {
+  console.log(`A user connected: ${socket.id}`);
+
+  socket.on('disconnect', () => {
+    console.log(`User disconnected: ${socket.id}`);
+  });
+});
+
+// Custom error handling middleware (must be after routes)
 app.use(errorHandler);
 
-// Set the port from environment variables or default to 5000
+// Server port
 const PORT = process.env.PORT || 5000;
 
-// Start the server and listen for incoming requests
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// Connect to MongoDB and start server
+connectDB()
+  .then(() => {
+    server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+  })
+  .catch((err) => {
+    console.error("Failed to connect to MongoDB:", err);
+    process.exit(1);
+  });

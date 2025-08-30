@@ -5,10 +5,13 @@ import { RootStackParamList } from '../navigation/types';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 
-type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Selection'>;
+type SelectionScreenNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  'Selection'
+>;
 
 const SelectionScreen: React.FC = () => {
-  const navigation = useNavigation<NavigationProp>();
+  const navigation = useNavigation<SelectionScreenNavigationProp>();
   const { t } = useTranslation();
 
   return (
@@ -29,6 +32,14 @@ const SelectionScreen: React.FC = () => {
         accessibilityLabel={t('adminLogin')}
       >
         <Text style={styles.buttonText}>{t('Admin')}</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate('TruckDriver')}
+        accessibilityLabel={t('truckDriverLogin')}
+      >
+        <Text style={styles.buttonText}>{t('Truck Driver')}</Text>
       </TouchableOpacity>
     </View>
   );

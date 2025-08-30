@@ -68,6 +68,7 @@ const SignupScreen3: React.FC<Props> = ({ navigation, route }) => {
           style={styles.input}
           placeholder={t('phoneNumber')}
           keyboardType="phone-pad"
+          textContentType="telephoneNumber"
           value={phone}
           onChangeText={setPhone}
         />
@@ -87,6 +88,7 @@ const SignupScreen3: React.FC<Props> = ({ navigation, route }) => {
           style={styles.input}
           placeholder={t('enterOtp')}
           keyboardType="number-pad"
+          textContentType="telephoneNumber"
           value={otp}
           onChangeText={setOtp}
         />
